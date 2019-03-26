@@ -41,7 +41,7 @@ class reply extends basepost {
      */
     public function __construct($attrs = array(), $fetch = false, $strictness = IGNORE_MISSING) {
 
-        $this->tablename = 'block_scomments_replies';
+        $this->tablename = 'block_socialcomments_replies';
         parent::__construct($attrs, $fetch, $strictness);
     }
 
@@ -53,7 +53,7 @@ class reply extends basepost {
     public function get_context() {
         global $DB;
 
-        $comment = $DB->get_record('block_scomments_comments', array('id' => $this->commentid), '*', MUST_EXIST);
+        $comment = $DB->get_record('block_socialcomments_comments', array('id' => $this->commentid), '*', MUST_EXIST);
         $context = \context::instance_by_id($comment->contextid, MUST_EXIST);
 
         return $context;
