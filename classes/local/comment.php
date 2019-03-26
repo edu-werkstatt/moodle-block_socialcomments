@@ -46,7 +46,7 @@ class comment extends basepost {
      */
     public function __construct($attrs = array(), $fetch = false, $strictness = IGNORE_MISSING) {
 
-        $this->tablename = 'block_scomments_comments';
+        $this->tablename = 'block_socialcomments_comments';
         parent::__construct($attrs, $fetch, $strictness);
     }
 
@@ -206,9 +206,9 @@ class comment extends basepost {
     public function delete() {
         global $DB;
 
-        $DB->delete_records('block_scomments_comments', array('id' => $this->id));
-        $DB->delete_records('block_scomments_replies', array('commentid' => $this->id));
-        $DB->delete_records('block_scomments_pins', array('itemid' => $this->id, 'itemtype' => comments_helper::PINNED_COMMENT));
+        $DB->delete_records('block_socialcomments_comments', array('id' => $this->id));
+        $DB->delete_records('block_socialcomments_replies', array('commentid' => $this->id));
+        $DB->delete_records('block_socialcomments_pins', array('itemid' => $this->id, 'itemtype' => comments_helper::PINNED_COMMENT));
     }
 
     public function fire_event_created() {
