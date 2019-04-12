@@ -53,7 +53,7 @@ class reply extends basepost {
     public function get_context() {
         global $DB;
 
-        $comment = $DB->get_record('block_socialcomments_comments', array('id' => $this->commentid), '*', MUST_EXIST);
+        $comment = $DB->get_record('block_socialcomments_cmmnts', array('id' => $this->commentid), '*', MUST_EXIST);
         $context = \context::instance_by_id($comment->contextid, MUST_EXIST);
 
         return $context;
