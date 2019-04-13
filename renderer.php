@@ -173,8 +173,6 @@ class block_socialcomments_renderer extends plugin_renderer_base {
                 'id' => 'ccomment-pinned-0',
             );
 
-            //$cb = $this->render_slider_checkbox('pagepinned', 1, $pagepinned, $label, $params);
-
             $cb = html_writer::checkbox('pagepinned', 1, !empty($pagepinned), '#', $params);
             $tooltip = (!empty($pagepinned))
                     ? get_string('unpinpage', 'block_socialcomments')
@@ -462,7 +460,7 @@ class block_socialcomments_renderer extends plugin_renderer_base {
     }
 
     /**
-     * Render the wohl content area of the block, which means:
+     * Render the whole content area of the block, which means:
      * - render the posting form
      * - render the comments content (= commentsinfo, subscribe and commentpages)
      *
@@ -471,7 +469,6 @@ class block_socialcomments_renderer extends plugin_renderer_base {
      * @return string
      */
     public function render_block_content($commentshelper, $contentdata) {
-
         $html = html_writer::start_tag('div', array('id' => 'ccomment-form-content'));
         $html .= $this->render_form_content($commentshelper, $contentdata);
         $html .= html_writer::end_tag('div');

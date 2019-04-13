@@ -23,6 +23,7 @@
  */
 namespace block_socialcomments\task;
 
+defined('MOODLE_INTERNAL') || die();
 
 /**
  * Task to process digests for socialcomments block.
