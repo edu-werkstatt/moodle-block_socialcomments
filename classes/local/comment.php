@@ -208,7 +208,10 @@ class comment extends basepost {
 
         $DB->delete_records('block_socialcomments_comments', array('id' => $this->id));
         $DB->delete_records('block_socialcomments_replies', array('commentid' => $this->id));
-        $DB->delete_records('block_socialcomments_pins', array('itemid' => $this->id, 'itemtype' => comments_helper::PINNED_COMMENT));
+        $DB->delete_records('block_socialcomments_pins', array(
+            'itemid' => $this->id,
+            'itemtype' => comments_helper::PINNED_COMMENT)
+        );
     }
 
     public function fire_event_created() {
