@@ -28,7 +28,7 @@ use \block_socialcomments\local\comments_helper;
 global $CFG;
 require_once($CFG->libdir . '/externallib.php');
 
-class block_socialcomments_cmmnts_testcase extends advanced_testcase {
+class block_socialcomments_comments_testcase extends advanced_testcase {
 
     /**
      * Test, whether the plugin is properly installed.
