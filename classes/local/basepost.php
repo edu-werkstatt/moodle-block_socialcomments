@@ -39,20 +39,7 @@ abstract class basepost {
      * @param int $strictness ignore or force comment exists in database.
      */
     public function __construct($attrs = array(), $fetch = false, $strictness = IGNORE_MISSING) {
-        global $DB, $USER;
-
-        if ($fetch && !empty($attrs['id'])) {
-
-            if ($dbattrs = $DB->get_record($this->tablename, array('id' => $attrs['id']), '*', $strictness)) {
-
-                // Load new content, if available.
-                if (isset($attrs['content'])) {
-                    $dbattrs->content = $attrs['content'];
-                }
-
-                $attrs = (array) $dbattrs;
-            }
-        }
+        global $USER;
 
         foreach ($attrs as $key => $value) {
             $this->$key = $value;

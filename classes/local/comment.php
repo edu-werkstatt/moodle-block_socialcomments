@@ -45,8 +45,23 @@ class comment extends basepost {
      * @param int $strictness ignore or force comment exists in database.
      */
     public function __construct($attrs = array(), $fetch = false, $strictness = IGNORE_MISSING) {
+        global $DB;
 
         $this->tablename = 'block_socialcomments_cmmnts';
+        
+        if ($fetch && !empty($attrs['id'])) {
+
+            if ($dbattrs = $DB->get_record('block_socialcomments_cmmnts', array('id' => $attrs['id']), '*', $strictness)) {
+
+                // Load new content, if available.
+                if (isset($attrs['content'])) {
+                    $dbattrs->content = $attrs['content'];
+                }
+
+                $attrs = (array) $dbattrs;
+            }
+        }
+
         parent::__construct($attrs, $fetch, $strictness);
     }
 
