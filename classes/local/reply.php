@@ -42,8 +42,6 @@ class reply extends basepost {
     public function __construct($attrs = array(), $fetch = false, $strictness = IGNORE_MISSING) {
         global $DB;
 
-        $this->tablename = 'block_socialcomments_replies';
-
         if ($fetch && !empty($attrs['id'])) {
 
             if ($dbattrs = $DB->get_record('block_socialcomments_replies', array('id' => $attrs['id']), '*', $strictness)) {

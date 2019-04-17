@@ -29,8 +29,6 @@ defined('MOODLE_INTERNAL') || die;
  */
 abstract class basepost {
 
-    protected $tablename;
-
     /**
      * Create a object of this class.
      *
