@@ -124,10 +124,7 @@ abstract class basepost {
     /**
      * Delete this post.
      */
-    public function delete() {
-        global $DB;
-        $DB->delete_records($this->tablename, array('id' => $this->id));
-    }
+    abstract public function delete();
 
     /**
      * Create or update this post.

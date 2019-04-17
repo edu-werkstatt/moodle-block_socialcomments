@@ -92,6 +92,14 @@ class reply extends basepost {
         return has_capability('block/socialcomments:deletereplies', $context);
     }
 
+    /**
+     * Delete this reply.
+     */
+    public function delete() {
+        global $DB;
+        $DB->delete_records('block_socialcomments_replies', array('id' => $this->id));
+    }    
+    
     public function fire_event_created() {
 
         $event = \block_socialcomments\event\reply_created::create(
