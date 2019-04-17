@@ -468,7 +468,7 @@ class block_socialcomments_renderer extends plugin_renderer_base {
         $html = '';
         foreach ($modinfo->get_section_info_all() as $section => $thissection) {
 
-            if ($section > course_get_format($course)->get_last_section_number()) {
+            if ($section > $course->numsections) {
                 continue;
             }
 

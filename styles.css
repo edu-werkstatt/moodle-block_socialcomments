@@ -50,11 +50,9 @@
 }
 
 .ccomment-post {
-    /*background: #eee;*/
-    background: #fff;
+    background: #eee;
     padding: 5px;
     margin-top: 10px;
-    border: 1px solid #ccc;
 }
 
 /* Content of a comment or reply */
@@ -367,14 +365,4 @@
 .ccomment-post-pinned-wrap:hover div.ccomments-pin-tooltip,
 .ccomment-form-pagepinned-wrap:hover div.ccomments-pin-tooltip {
     display:block;
-}
-
-
-div#ccomment-form-content img.icon {
-    height: 30px;
-    width: 35px;
-}
-
-div.ccomment-commentspage img.icon {
-    width: auto;
 }

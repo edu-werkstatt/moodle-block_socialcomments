@@ -70,7 +70,7 @@ class report_helper {
 
         foreach ($modinfo->get_section_info_all() as $section => $thissection) {
 
-            if ($section > course_get_format($course)->get_last_section_number()) {
+            if ($section > $course->numsections) {
                 continue;
             }
             $showsection = $thissection->uservisible ||
