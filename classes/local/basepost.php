@@ -128,24 +128,7 @@ abstract class basepost {
 
     /**
      * Create or update this post.
-     *
-     * @return \block_socialcomments\local\postbase
      */
-    public function save() {
-        global $DB, $USER;
-
-        $this->timemodified = time();
-
-        if ($this->id > 0) {
-            $DB->update_record($this->tablename, $this);
-        } else {
-            $this->userid = $USER->id;
-            $this->timecreated = $this->timemodified;
-            $this->id = $DB->insert_record($this->tablename, $this);
-
-            $this->fire_event_created();
-        }
-        return $this;
-    }
+    abstract public function save();
 
 }

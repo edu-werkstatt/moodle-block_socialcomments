@@ -114,4 +114,25 @@ class reply extends basepost {
         $event->trigger();
     }
 
+    /**
+     * Create or update this post.
+     *
+     * @return \block_socialcomments\local\reply
+     */    
+    public function save() {
+        global $DB, $USER;
+
+        $this->timemodified = time();
+
+        if ($this->id > 0) {
+            $DB->update_record('block_socialcomments_replies', $this);
+        } else {
+            $this->userid = $USER->id;
+            $this->timecreated = $this->timemodified;
+            $this->id = $DB->insert_record('block_socialcomments_replies', $this);
+
+            $this->fire_event_created();
+        }
+        return $this;
+    }    
 }

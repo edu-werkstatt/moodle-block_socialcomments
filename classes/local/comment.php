@@ -240,8 +240,13 @@ class comment extends basepost {
         $event->trigger();
     }
 
-
+    /**
+     * Create or update this post.
+     *
+     * @return \block_socialcomments\local\comment
+     */
     public function save() {
+        global $DB, $USER;
 
         // Course id is needed for proper cleanup, when course is deleted.
         if ($this->contextid > 0) {
@@ -251,7 +256,19 @@ class comment extends basepost {
             $this->courseid = SITEID;
         }
 
-        parent::save();
+
+        $this->timemodified = time();
+
+        if ($this->id > 0) {
+            $DB->update_record('block_socialcomments_cmmnts', $this);
+        } else {
+            $this->userid = $USER->id;
+            $this->timecreated = $this->timemodified;
+            $this->id = $DB->insert_record('block_socialcomments_cmmnts', $this);
+
+            $this->fire_event_created();
+        }
+        return $this;
     }
 
 
