@@ -39,7 +39,7 @@ class reportfilter_form extends \moodleform {
 
         $mform = $this->_form;
 
-        $reporthelper = self::get_instance();
+        $reporthelper = \block_socialcomments\local\report_helper::get_instance();
         $visiblesectionmenu = $reporthelper->get_visible_section_menu();
 
         // Topics.
