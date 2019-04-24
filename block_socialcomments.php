@@ -16,7 +16,7 @@
 
 /**
  * Handles displaying the socialcomments block.
- * 
+ *
  * @package   block_socialcomments
  * @copyright 2017 Andreas Wagner, Synergy Learning
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -31,7 +31,7 @@ defined('MOODLE_INTERNAL') || die();
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class block_socialcomments extends block_base {
-  
+
     /**
      * Initialise the block.
      */
@@ -41,7 +41,7 @@ class block_socialcomments extends block_base {
 
     /**
      * Locations where block can be displayed.
-     * 
+     *
      * @return array
      */
     public function applicable_formats() {
@@ -50,7 +50,7 @@ class block_socialcomments extends block_base {
 
     /**
      * Forbid the block to be added multiple times to a single page.
-     * 
+     *
      * @return boolean
      */
     public function instance_allow_multiple() {
@@ -59,7 +59,7 @@ class block_socialcomments extends block_base {
 
     /**
      * Allow the block to have a configuration page.
-     * 
+     *
      * @return boolean
      */
     public function has_config() {
@@ -102,7 +102,7 @@ class block_socialcomments extends block_base {
 
     /**
      * Return the attributes to set for this block.
-     * 
+     *
      * @return array An array of HTML attributes.
      */
     public function html_attributes() {
