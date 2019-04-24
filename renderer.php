@@ -395,7 +395,7 @@ class block_socialcomments_renderer extends plugin_renderer_base {
     }
 
     /**
-     * Render the wohl content area of the block, which means:
+     * Render the whole content area of the block, which means:
      * - render the posting form
      * - render the comments content (= commentsinfo, subscribe and commentpages)
      *
