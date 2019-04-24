@@ -21,6 +21,8 @@
  */
 namespace block_socialcomments\task;
 
+defined('MOODLE_INTERNAL') || die();
+
 class process_digest_cron extends \core\task\scheduled_task {
 
     public function get_name() {
