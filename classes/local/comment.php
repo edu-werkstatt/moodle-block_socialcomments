@@ -228,7 +228,11 @@ class comment extends basepost {
         $event->trigger();
     }
 
-
+    /**
+     * Create or update this post.
+     *
+     * @return \block_socialcomments\local\comment
+     */
     public function save() {
 
         // Course id is needed for proper cleanup, when course is deleted.
