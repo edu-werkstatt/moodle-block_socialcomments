@@ -29,7 +29,6 @@ use block_socialcomments\local\comment;
 
 $id = required_param('id', PARAM_INT);
 $comment = new comment(array('id' => $id), true, MUST_EXIST);
-
 $courseid = required_param('courseid', PARAM_INT);
 $course = $DB->get_record('course', array('id' => $courseid), '*', MUST_EXIST);
 
