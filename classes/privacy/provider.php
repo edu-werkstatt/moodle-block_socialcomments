@@ -35,11 +35,25 @@ use core_privacy\local\request\writer;
 
 defined('MOODLE_INTERNAL') || die();
 
+/**
+ * Privacy class for requesting user data.
+ *
+ * @package   block_socialcomments
+ * @copyright 2019 Paul Steffen, EDU-Werkstatt GmbH
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class provider implements
     // This plugin does store course related comments entered by users.
     \core_privacy\local\metadata\provider,
     \core_privacy\local\request\plugin\provider,
     \core_privacy\local\request\core_userlist_provider {
+
+    /**
+     * Returns meta data about this system.
+     *
+     * @param collection $collection
+     * @return collection
+     */
     public static function get_metadata(collection $collection) : collection {
         $collection->add_database_table(
             'block_socialcomments_cmmnts',
@@ -86,6 +100,15 @@ class provider implements
         return $collection;
     }
 
+    /**
+     * Get the list of contexts that contain user information for the specified user.
+     *
+     * In the case of socialcomments, this is the context of any course where
+     * the user has made a comment or replied to.
+     *
+     * @param   int           $userid       The user to search.
+     * @return  contextlist   $contextlist  The list of contexts used in this plugin.
+     */
     public static function get_contexts_for_userid(int $userid) : contextlist {
         $contextlist = new contextlist();
         $params = [
@@ -95,6 +118,11 @@ class provider implements
         return $contextlist;
     }
 
+    /**
+     * Get the list of users within a specific context.
+     *
+     * @param userlist $userlist The userlist containing the list of users who have data in this context/plugin combination.
+     */
     public static function get_users_in_context(userlist $userlist) {
         $context = $userlist->get_context();
         $params = [
@@ -104,6 +132,11 @@ class provider implements
         return $userlist;
     }
 
+    /**
+     * Export all user data for the specified user, in the specified contexts, using the supplied exporter instance.
+     *
+     * @param   approved_contextlist    $contextlist    The approved contexts to export information for.
+     */
     public static function export_user_data(approved_contextlist $contextlist) {
         global $DB;
 
@@ -114,14 +147,29 @@ class provider implements
     }
 
   
+    /**
+     * Delete all data for all users in the specified context.
+     *
+     * @param   context $context A user context.
+     */
     public static function delete_data_for_all_users_in_context(\context $context) {
   
     }
 
+    /**
+     * Delete multiple users within a single context.
+     *
+     * @param approved_userlist $userlist The approved context and user information to delete information for.
+     */
     public static function delete_data_for_users(approved_userlist $userlist) {
 
     }
 
+    /**
+     * Delete all user data for the specified user.
+     *
+     * @param   approved_contextlist $contextlist  The approved contexts and user information to delete information for.
+     */
     public static function delete_data_for_user(approved_contextlist $contextlist) {
     }
 }
