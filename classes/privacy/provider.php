@@ -24,13 +24,65 @@
 
 namespace block_socialcomments\privacy;
 
+use core_privacy\local\metadata\collection;
+use core_privacy\local\request\approved_contextlist;
+use core_privacy\local\request\approved_userlist;
+use core_privacy\local\request\contextlist;
+use core_privacy\local\request\deletion_criteria;
+use core_privacy\local\request\helper;
+use core_privacy\local\request\userlist;
+use core_privacy\local\request\writer;
 
 defined('MOODLE_INTERNAL') || die();
 
 class provider implements
-  
+    // This plugin does store course related comments entered by users.
+    \core_privacy\local\metadata\provider,
+    \core_privacy\local\request\plugin\provider,
+    \core_privacy\local\request\core_userlist_provider {
     public static function get_metadata(collection $collection) : collection {
-      
+        $collection->add_database_table(
+            'block_socialcomments_cmmnts',
+             [
+                'contextid' => 'privacy:metadata:block_socialcomments_cmmnts:contextid',
+                'content' => 'privacy:metadata:block_socialcomments_cmmnts:content',
+                'userid' => 'privacy:metadata:block_socialcomments_cmmnts:userid',
+                'groupid' => 'privacy:metadata:block_socialcomments_cmmnts:groupid',
+                'courseid' => 'privacy:metadata:block_socialcomments_cmmnts:courseid',
+                'timemodified' => 'privacy:metadata:block_socialcomments_cmmnts:timemodified',
+             ],
+            'privacy:metadata:block_socialcomments_cmmnts'
+        );
+        $collection->add_database_table(
+            'block_socialcomments_subscrs',
+             [
+                'courseid' => 'privacy:metadata:block_socialcomments_subscrs:courseid',
+                'contextid' => 'privacy:metadata:block_socialcomments_subscrs:contextid',
+                'userid' => 'privacy:metadata:block_socialcomments_subscrs:userid',
+                'timelastsent' => 'privacy:metadata:block_socialcomments_subscrs:timelastsent',
+                'timemodified' => 'privacy:metadata:block_socialcomments_subscrs:timemodified',
+             ],
+            'privacy:metadata:block_socialcomments_subscrs'
+        );
+        $collection->add_database_table(
+            'block_socialcomments_pins',
+             [
+                'itemtype' => 'privacy:metadata:block_socialcomments_pins:itemtype',
+                'itemid' => 'privacy:metadata:block_socialcomments_pins:itemid',
+                'userid' => 'privacy:metadata:block_socialcomments_pins:userid',
+             ],
+            'privacy:metadata:block_socialcomments_pins'
+        );
+        $collection->add_database_table(
+            'block_socialcomments_replies',
+             [
+                'commentid' => 'privacy:metadata:block_socialcomments_replies:commentid',
+                'content' => 'privacy:metadata:block_socialcomments_replies:content',
+                'userid' => 'privacy:metadata:block_socialcomments_replies:userid',
+                'timemodified' => 'privacy:metadata:block_socialcomments_replies:timemodified',
+             ],
+            'privacy:metadata:block_socialcomments_replies'
+        );
         return $collection;
     }
 

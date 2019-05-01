@@ -24,13 +24,23 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+use \core_privacy\local\metadata\collection;
+use \core_privacy\local\request\approved_userlist;
+use \core_privacy\tests\provider_testcase;
+use \block_socialcomments\privacy\provider;
+
 class block_socialcomments_testcase extends provider_testcase {
     public function setUp() {
         $this->resetAfterTest(true);
     }
 
-    public function test_get_metadata() {
 
+    /**
+     * Test for provider::get_metadata().
+     */
+    public function test_get_metadata() {
+        $collection = new collection('block_socialcomments');
+        $newcollection = provider::get_metadata($collection);
     }
 
  
