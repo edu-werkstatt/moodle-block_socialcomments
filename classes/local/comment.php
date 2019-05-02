@@ -246,6 +246,4 @@ class comment extends basepost {
         parent::save();
     }
 
-
-
 }
