@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="blocks/socialcomments/db" VERSION="20170603" COMMENT="XMLDB file for Moodle blocks/socialcomments"
+<XMLDB PATH="blocks/socialcomments/db" VERSION="20190425" COMMENT="XMLDB file for Moodle blocks/socialcomments"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
