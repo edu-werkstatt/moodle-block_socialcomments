@@ -32,11 +32,12 @@ use core_privacy\local\request\deletion_criteria;
 use core_privacy\local\request\helper;
 use core_privacy\local\request\userlist;
 use core_privacy\local\request\writer;
+use \block_socialcomments\local\comments_helper;
 
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * Privacy class for requesting user data.
+ * Privacy Subsystem for block block_socialcomments.
  *
  * @package   block_socialcomments
  * @copyright 2019 Paul Steffen, EDU-Werkstatt GmbH
@@ -51,8 +52,8 @@ class provider implements
     /**
      * Returns meta data about this system.
      *
-     * @param collection $collection
-     * @return collection
+     * @param collection $collection The initialised collection to add items to.
+     * @return collection A listing of user data stored through this system.
      */
     public static function get_metadata(collection $collection) : collection {
         $collection->add_database_table(
@@ -106,8 +107,8 @@ class provider implements
      * In the case of socialcomments, this is the context of any course where
      * the user has made a comment or replied to.
      *
-     * @param   int           $userid       The user to search.
-     * @return  contextlist   $contextlist  The list of contexts used in this plugin.
+     * @param int $userid The user to search.
+     * @return contextlist $contextlist  The list of contexts used in this plugin.
      */
     public static function get_contexts_for_userid(int $userid) : contextlist {
         $contextlist = new contextlist();
@@ -115,6 +116,49 @@ class provider implements
             'userid' => $userid
         ];
 
+        // Get context by comments.
+        $sql = "SELECT c.id
+                FROM {context} c
+                INNER JOIN {block_socialcomments_cmmnts} s ON s.contextid = c.id
+                WHERE (s.userid = :userid)";
+        $contextlist->add_from_sql($sql, $params);
+
+        // Get context by replies.
+        $sql = "SELECT c.id
+                FROM {context} c
+                INNER JOIN mdl_block_socialcomments_cmmnts s ON s.contextid = c.id
+                INNER JOIN mdl_block_socialcomments_replies r ON r.commentid = s.id
+                WHERE (r.userid = :userid)
+                GROUP BY id";
+        $contextlist->add_from_sql($sql, $params);
+
+        // Get context by subscriptions.
+        $sql = "SELECT c.id
+                FROM {context} c
+                INNER JOIN {block_socialcomments_subscrs} s ON s.contextid = c.id
+                WHERE (s.userid = :userid)";
+        $contextlist->add_from_sql($sql, $params);
+
+        // Get context by pins.
+        $sql = "SELECT c.id
+                FROM {context} c
+                INNER JOIN {block_socialcomments_cmmnts} s ON s.contextid = c.id
+                INNER JOIN {block_socialcomments_pins} p ON p.itemid = s.id
+                WHERE (p.userid = :userid_comment)
+                AND (p.itemtype = :pin_type_comment)
+                UNION
+                SELECT c.id
+                FROM {context} c
+                INNER JOIN  {block_socialcomments_pins} p ON p.itemid = c.id
+                WHERE (p.userid = :userid_page)
+                AND (p.itemtype = :pin_type_page)";
+        $params = [
+          'userid_comment' => $userid,
+          'pin_type_comment' => comments_helper::PINNED_COMMENT,
+          'userid_page' => $userid,
+          'pin_type_page' => comments_helper::PINNED_PAGE,
+        ];
+        $contextlist->add_from_sql($sql, $params);
         return $contextlist;
     }
 
@@ -129,13 +173,39 @@ class provider implements
             'contextid' => $context->id,
         ];
 
+        // Get userlist by comments.
+        $sql = "SELECT userid
+            FROM {block_socialcomments_cmmnts}
+            WHERE contextid = :contextid";
+        $userlist->add_from_sql('userid', $sql, $params);
+
+        // Get userlist by replies.
+        $sql = "SELECT r.userid
+            FROM {block_socialcomments_replies}
+            INNER JOIN {block_socialcomments_cmmnts} sc ON sc.id = r.commentid
+            WHERE contextid = :contextid";
+        $userlist->add_from_sql('userid', $sql, $params);
+
+        // Get userlist by subscriptions.
+        $sql = "SELECT userid
+            FROM {block_socialcomments_subscrs}
+            WHERE contextid = :contextid";
+        $userlist->add_from_sql('userid', $sql, $params);
+
+        // Get userlist by pins.
+        $sql = "SELECT p.userid
+            FROM {block_socialcomments_pins} p
+            INNER JOIN {block_socialcomments_cmmnts} sc ON sc.id = p.itemid
+            WHERE (contextid = :contextid)";
+        $userlist->add_from_sql('userid', $sql, $params);
+
         return $userlist;
     }
 
     /**
      * Export all user data for the specified user, in the specified contexts, using the supplied exporter instance.
      *
-     * @param   approved_contextlist    $contextlist    The approved contexts to export information for.
+     * @param approved_contextlist $contextlist The approved contexts to export information for.
      */
     public static function export_user_data(approved_contextlist $contextlist) {
         global $DB;
@@ -150,7 +220,7 @@ class provider implements
     /**
      * Delete all data for all users in the specified context.
      *
-     * @param   context $context A user context.
+     * @param \context $context A user context.
      */
     public static function delete_data_for_all_users_in_context(\context $context) {
   
@@ -168,7 +238,7 @@ class provider implements
     /**
      * Delete all user data for the specified user.
      *
-     * @param   approved_contextlist $contextlist  The approved contexts and user information to delete information for.
+     * @param approved_contextlist $contextlist The approved contexts and user information to delete information for.
      */
     public static function delete_data_for_user(approved_contextlist $contextlist) {
     }
