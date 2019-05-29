@@ -18,7 +18,7 @@
  * Plugin upgrade steps are defined here.
  *
  * @package   block_socialcomments
- * @copyright 2018 Paul Steffen, EDU-Werkstatt GmbH
+ * @copyright 2019 Paul Steffen, EDU-Werkstatt GmbH
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
