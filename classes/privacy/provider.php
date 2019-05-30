@@ -345,7 +345,15 @@ class provider implements
      * @param \context $context A user context.
      */
     public static function delete_data_for_all_users_in_context(\context $context) {
-  
+        global $DB;
+
+        // Only delete data for a user context.
+        if ($context->contextlevel == CONTEXT_USER) {
+            $DB->delete_records('block_socialcomments_cmmnts', ['userid' => $context->instanceid]);
+            $DB->delete_records('block_socialcomments_replies', ['userid' => $context->instanceid]);
+            $DB->delete_records('block_socialcomments_subsrs', ['userid' => $context->instanceid]);
+            $DB->delete_records('block_socialcomments_pins', ['userid' => $context->instanceid]);
+        }
     }
 
     /**
@@ -354,7 +362,16 @@ class provider implements
      * @param approved_userlist $userlist The approved context and user information to delete information for.
      */
     public static function delete_data_for_users(approved_userlist $userlist) {
+        global $DB;
 
+        foreach ($contextlist as $context) {
+            if ($context->contextlevel == CONTEXT_USER && $contextlist->get_user()->id == $context->instanceid) {
+                $DB->delete_records('block_socialcomments_cmmnts', ['userid' => $context->instanceid]);
+                $DB->delete_records('block_socialcomments_replies', ['userid' => $context->instanceid]);
+                $DB->delete_records('block_socialcomments_subsrs', ['userid' => $context->instanceid]);
+                $DB->delete_records('block_socialcomments_pins', ['userid' => $context->instanceid]);
+            }
+        }
     }
 
     /**
@@ -363,5 +380,10 @@ class provider implements
      * @param approved_contextlist $contextlist The approved contexts and user information to delete information for.
      */
     public static function delete_data_for_user(approved_contextlist $contextlist) {
+        global $DB;
+        $DB->delete_records('block_socialcomments_cmmnts', ['userid' => $userid]);
+        $DB->delete_records('block_socialcomments_replies', ['userid' => $userid]);
+        $DB->delete_records('block_socialcomments_subsrs', ['userid' => $userid]);
+        $DB->delete_records('block_socialcomments_pins', ['userid' => $userid]);
     }
 }
