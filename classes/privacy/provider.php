@@ -31,6 +31,7 @@ use core_privacy\local\request\contextlist;
 use core_privacy\local\request\deletion_criteria;
 use core_privacy\local\request\helper;
 use core_privacy\local\request\userlist;
+use core_privacy\local\request\transform;
 use core_privacy\local\request\writer;
 use \block_socialcomments\local\comments_helper;
 
@@ -208,15 +209,136 @@ class provider implements
      * @param approved_contextlist $contextlist The approved contexts to export information for.
      */
     public static function export_user_data(approved_contextlist $contextlist) {
-        global $DB;
+        $context = $contextlist->current();
+        $user = \core_user::get_user($contextlist->get_user()->id);
 
-        if (empty($contextlist->count())) {
-            return;
-        }
-        $userid = $contextlist->get_user()->id;
+        static::export_comments($user->id, $context);
+        static::export_comments($user->id, $context);
+        static::export_replies($user->id, $context);
+        static::export_pins($user->id, $context);
+        static::export_subscriptions($user->id, $context);
     }
 
-  
+    /**
+     * Export all socialcomments comments for the for the specified user.
+     *
+     * @param int $userid The user ID.
+     * @param \context $context The user context.
+     */
+    protected static function export_comments(int $userid, \context $context) {
+        global $DB;
+        $sql = "SELECT sc.content, sc.contextid, sc.userid,
+                  sc.timecreated, sc.timemodified
+                FROM {block_socialcomments_cmmnts} sc WHERE
+                  sc.userid = :userid";
+        $params = ['userid' => $userid];
+        $records = $DB->get_records_sql($sql, $params);
+        if (!empty($records)) {
+            $comments = (object) array_map(function($record) use($context) {
+                return [
+                        'content' => format_string($record->content),
+                        'timecreated' => transform::datetime($record->timecreated),
+                        'timemodified' => transform::datetime($record->timemodified)
+                ];
+            }, $records);
+            writer::with_context($context)->export_data([get_string('privacy:commentspath',
+                    'block_socialcomments')], $comments);
+        }
+    }
+
+    /**
+     * Export all socialcomments replies for the for the specified user.
+     *
+     * @param int $userid The user ID.
+     * @param \context $context The user context.
+     */
+    protected static function export_replies(int $userid, \context $context) {
+        global $DB;
+        $sql = "SELECT r.content, r.userid, r.timecreated, r.timemodified, sc.contextid
+                FROM {block_socialcomments_replies} r
+                INNER JOIN {block_socialcomments_cmmnts} sc ON sc.id = r.commentid
+                WHERE (r.userid = :userid)";
+        $params = ['userid' => $userid];
+        $records = $DB->get_records_sql($sql, $params);
+        if (!empty($records)) {
+            $replies = (object) array_map(function($record) use($context) {
+                return [
+                        'content' => format_string($record->content),
+                        'timecreated' => transform::datetime($record->timecreated),
+                        'timemodified' => transform::datetime($record->timemodified)
+                ];
+            }, $records);
+            writer::with_context($context)->export_data([get_string('privacy:repliespath',
+                    'block_socialcomments')], $replies);
+        }
+    }
+
+    /**
+     * Export all socialcomments subscriptions for the for the specified user.
+     *
+     * @param int $userid The user ID.
+     * @param \context $context The user context.
+     */
+    protected static function export_subscriptions(int $userid, \context $context) {
+        global $DB;
+        $sql = "SELECT s.courseid, s.timelastsent, s.timecreated, s.timemodified
+                FROM {block_socialcomments_subscrs} s
+                WHERE (s.userid = :userid)";
+        $params = ['userid' => $userid];
+        $records = $DB->get_records_sql($sql, $params);
+        if (!empty($records)) {
+            $subscriptions = (object) array_map(function($record) use($context) {
+                $course = $DB->get_record('course','id', $record->courseid);
+                return [
+                        'course' => format_string($course->fullname),
+                        'timelastsent' => transform::datetime($record->timelastsent),
+                        'timecreated' => transform::datetime($record->timecreated),
+                        'timemodified' => transform::datetime($record->timemodified)
+                ];
+            }, $records);
+            writer::with_context($context)->export_data([get_string('privacy:subscriptionspath',
+                    'block_socialcomments')], $subscriptions);
+        }
+    }
+
+    /**
+     * Export all socialcomments pins for the for the specified user.
+     *
+     * @param int $userid The user ID.
+     * @param \context $context The user context.
+     */
+    protected static function export_pins(int $userid, \context $context) {
+        global $DB;
+        $sql = "SELECT p.itemtype, p.itemid, p.timecreated, c.contextid
+                FROM {block_socialcomments_pins} p
+                JOIN {block_socialcomments_cmmnts} c
+                ON p.itemid = c.id
+                WHERE (p.userid = :userid_comment)
+                AND (p.itemtype = :pin_type_comment)
+                UNION
+                SELECT p.itemtype, p.itemid, p.timecreated, p.itemid AS contextid
+                FROM {block_socialcomments_pins} p
+                WHERE (p.userid = :userid_page)
+                AND (p.itemtype = :pin_type_page)";
+        $params = [
+            'userid_comment' => $userid,
+            'pin_type_comment' => comments_helper::PINNED_COMMENT,
+            'userid_page' => $userid,
+            'pin_type_page' => comments_helper::PINNED_PAGE,
+        ];
+        $records = $DB->get_records_sql($sql, $params);
+        if (!empty($records)) {
+            $pins = (object) array_map(function($record) use($context) {
+                return [
+                        'type' => format_string($record->itemtype),
+                        'timecreated' => transform::datetime($record->timecreated),
+                ];
+            }, $records);
+            writer::with_context($context)->export_data([get_string('privacy:pinspath',
+                    'block_socialcomments')], $pins);
+        }
+    }
+
     /**
      * Delete all data for all users in the specified context.
      *
