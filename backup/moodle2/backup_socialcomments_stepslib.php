@@ -25,6 +25,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+use \block_socialcomments\local\comments_helper;
+
 /**
  * Block socialcomments backup structure step class.
  *
@@ -117,12 +119,12 @@ class backup_socialcomments_block_structure_step extends backup_block_structure_
                                         FROM {block_socialcomments_pins} p
                                         JOIN {block_socialcomments_cmmnts} c
                                         ON p.itemid = c.id
-                                        AND p.itemtype = '.block_socialcomments\local\comments_helper::PINNED_COMMENT.'
+                                        AND p.itemtype = '.comments_helper::PINNED_COMMENT.'
                                         AND c.courseid = ?
                                         UNION
                                         SELECT p.* FROM {block_socialcomments_pins} p
                                         WHERE p.itemid = '.$contextid.'
-                                        AND p.itemtype = '.block_socialcomments\local\comments_helper::PINNED_PAGE.'
+                                        AND p.itemtype = '.comments_helper::PINNED_PAGE.'
                                         ORDER BY id',
                                     array(
                                         backup::VAR_COURSEID,
