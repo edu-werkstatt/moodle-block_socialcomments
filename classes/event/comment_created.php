@@ -43,7 +43,7 @@ class comment_created extends \core\event\base {
     protected function init() {
         $this->data['crud'] = 'c';
         $this->data['edulevel'] = self::LEVEL_PARTICIPATING;
-        $this->data['objecttable'] = 'block_socialcomments_comments';
+        $this->data['objecttable'] = 'block_socialcomments_cmmnts';
     }
 
     /**

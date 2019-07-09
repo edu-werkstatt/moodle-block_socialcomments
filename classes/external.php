@@ -243,9 +243,9 @@ class block_socialcomments_external extends external_api {
         $checked = $commentshelper->set_pinned($context->id, $USER->id, $checked, $commentid);
 
         if ($commentid == 0) {
-            $tooltip = ($checked)? get_string('unpinpage', 'block_socialcomments') : get_string('pinpage', 'block_socialcomments') ;
+            $tooltip = ($checked) ? get_string('unpinpage', 'block_socialcomments') : get_string('pinpage', 'block_socialcomments');
         } else {
-            $tooltip = ($checked)? get_string('unpin', 'block_socialcomments') : get_string('pin', 'block_socialcomments') ;
+            $tooltip = ($checked) ? get_string('unpin', 'block_socialcomments') : get_string('pin', 'block_socialcomments');
         }
 
         $results = array(
