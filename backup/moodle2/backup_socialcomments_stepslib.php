@@ -36,10 +36,15 @@ class backup_socialcomments_block_structure_step extends backup_block_structure_
     public function execute() {
         parent::execute();
     }
+    /**
+     *  Define the complete structure for backup.
+     */
 
     protected function define_structure() {
         // To know if we are including userinfo
         $userinfo = true;// $this->get_setting_value('userinfo');
+
+        // The plugin uses the course context instead of the block context.
         $courseid = $this->get_courseid();
         $contextid = context_course::instance($courseid)->id;
 
@@ -48,7 +53,7 @@ class backup_socialcomments_block_structure_step extends backup_block_structure_
         $pins = new backup_nested_element('pins');
         $subscriptions = new backup_nested_element('subscriptions');
 
-        // Define each element separated
+        // Define each element separated.
         $comment = new backup_nested_element('comment', array('id'), array(
             'contextid',
             'component',
@@ -88,7 +93,7 @@ class backup_socialcomments_block_structure_step extends backup_block_structure_
             'timemodified'
         ));
 
-        // Build the tree
+        // Build the tree.
         $comments->add_child($comment);
         $comment->add_child($replies);
         $comments->add_child($pins);
@@ -98,9 +103,9 @@ class backup_socialcomments_block_structure_step extends backup_block_structure_
         $pins->add_child($pin);
         $subscriptions->add_child($subscription);
 
-        // Define sources
+        // Define sources.
 
-        // All the elements only happen if we are including user info
+        // All the elements only happen if we are including user info.
         if ($userinfo) {
             $comment->set_source_sql('SELECT *
                                        FROM {block_socialcomments_cmmnts}
@@ -130,13 +135,13 @@ class backup_socialcomments_block_structure_step extends backup_block_structure_
                                     ));
         }
 
-        // Define id annotations
+        // Define id annotations.
         $comment->annotate_ids('user', 'userid');
         $comment->annotate_ids('group', 'groupid');
 
-        // Define file annotations
+        // No file annotations defined.
 
-        // Return the root element (socialcomments), wrapped into standard activity structure
+        // Return the root element (socialcomments), wrapped into standard activity structure.
         return $this->prepare_block_structure($comments);
     }
 }

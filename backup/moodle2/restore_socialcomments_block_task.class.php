@@ -28,34 +28,34 @@ require_once (__DIR__ . '/restore_socialcomments_stepslib.php');
 
 
 /**
- * Specialised restore task for the socialcomments block
+ * Specialised restore task for the socialcomments block.
  *
  * @copyright  2019 Paul Steffen, EDU-Werkstatt GmbH
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class restore_socialcomments_block_task extends restore_block_task {
     /**
-     * Define one array() of fileareas that each block controls
+     * Define one array() of fileareas that each block controls.
      *
      * @return array
      */
     public function get_fileareas() {
-        return array(); // No associated fileareas
+        return array(); // No associated fileareas.
     }
 
     /**
      * Define one array() of configdata attributes
-     * that need to be decoded
+     * that need to be decoded.
      *
      * @return array
      */
     public function get_configdata_encoded_attributes() {
-        return array(); // No special handling of configdata
+        return array(); // No special handling of configdata.
     }
 
     /**
      * Define the contents in the activity that must be
-     * processed by the link decoder
+     * processed by the link decoder.
      *
      * @return array
      */
@@ -65,7 +65,7 @@ class restore_socialcomments_block_task extends restore_block_task {
 
     /**
      * Define the decoding rules for links belonging
-     * to the activity to be executed by the link decoder
+     * to the activity to be executed by the link decoder.
      *
      * @return array
      */
@@ -74,13 +74,13 @@ class restore_socialcomments_block_task extends restore_block_task {
     }
 
     /**
-     * Define (add) particular settings that each block can have
+     * Define (add) particular settings that each block can have.
      */
     protected function define_my_settings() {
     }
 
     /**
-     * Define (add) particular steps that each block can have
+     * Define (add) particular steps that each block can have.
      */
     protected function define_my_steps() {
         $this->add_step(new restore_socialcomments_block_structure_step('socialcomments_structure', 'socialcomments.xml'));

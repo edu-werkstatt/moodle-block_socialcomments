@@ -15,6 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Specialised backup task for the socialcomments block.
+ *
  * @package    block_socialcomments
  * @subpackage backup-moodle2
  * @copyright  2019 Paul Steffen, EDU-Werkstatt GmbH
@@ -27,7 +29,7 @@ require_once (__DIR__ . '/backup_socialcomments_stepslib.php');
 //require_once (__DIR__ . '/backup_socialcomments_settingslib.php'); // optional
 
 /**
- * Specialised backup task for the socialcomments block
+ * Class implementing the backup tasks.
  *
  * @copyright  2019 Paul Steffen, EDU-Werkstatt GmbH
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -52,7 +54,7 @@ class backup_socialcomments_block_task extends backup_block_task {
      * Define one array() of fileareas that each block controls.
      */
     public function get_fileareas() {
-        return array(); // No associated fileareas
+        return array(); // No associated fileareas.
     }
 
     /**
@@ -63,7 +65,13 @@ class backup_socialcomments_block_task extends backup_block_task {
         return array(); // No special handling of configdata.
     }
 
+    /**
+     * Encode URLs in content into a transportable form.
+     *
+     * @param string $content
+     * @return string
+     */
     static public function encode_content_links($content) {
-        return $content; // No special encoding of links
+        return $content; // No special encoding of links required.
     }
 }
