@@ -49,7 +49,7 @@ class restore_socialcomments_block_structure_step extends restore_structure_step
     /**
      * Restore comment entries.
      *
-     * @param object $data
+     * @param object $data Data for comment entries.
      */
     public function process_comment($data) {
         global $DB;
@@ -71,9 +71,10 @@ class restore_socialcomments_block_structure_step extends restore_structure_step
     }
 
     /**
-     * Restore reply entries.
+     * Restore reply entries. This function will be called by
+     * the function process_comment.
      *
-     * @param object $data
+     * @param object $data Data for reply entries.
      */
     public function process_comment_reply($data) {
         global $DB;
@@ -88,7 +89,7 @@ class restore_socialcomments_block_structure_step extends restore_structure_step
     /**
      * Restore pin entries.
      *
-     * @param object $data
+     * @param object $data Data for pin entries.
      */
     public function process_pin($data) {
       global $DB;
@@ -107,7 +108,7 @@ class restore_socialcomments_block_structure_step extends restore_structure_step
     /**
      * Restore subscription entries.
      *
-     * @param object $data
+     * @param object $data Data for subscription entries.
      */
     public function process_subscription($data) {
         global $DB;
