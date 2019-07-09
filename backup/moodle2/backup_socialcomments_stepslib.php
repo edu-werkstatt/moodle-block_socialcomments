@@ -42,10 +42,6 @@ class backup_socialcomments_block_structure_step extends backup_block_structure_
         // To know if we are including userinfo.
         $userinfo = $this->get_setting_value('users');
 
-        // The plugin uses the course context instead of the block context.
-        $courseid = $this->get_courseid();
-        $contextid = context_course::instance($courseid)->id;
-
         $comments = new backup_nested_element('socialcomments');
         $replies = new backup_nested_element('replies');
         $pins = new backup_nested_element('pins');
@@ -113,8 +109,10 @@ class backup_socialcomments_block_structure_step extends backup_block_structure_
                                        FROM {block_socialcomments_subscrs}
                                        WHERE courseid = ?', array(backup::VAR_COURSEID));
 
-            // We don't use backup::VAR_CONTEXTID in this query since we
-            // require the course contextid, not the block contextid.
+            // Since the socialcomments block works with the course context in place of the block context,
+            // we use the value from $contextid instead of backup::VAR_CONTEXTID.
+            $courseid = $this->get_courseid();
+            $contextid = context_course::instance($courseid)->id;            
             $pin->set_source_sql('SELECT p.*
                                         FROM {block_socialcomments_pins} p
                                         JOIN {block_socialcomments_cmmnts} c
