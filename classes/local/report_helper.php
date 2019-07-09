@@ -151,10 +151,10 @@ class report_helper {
 
         $selectcount = "SELECT cc.id ";
 
-        $from = "FROM {block_socialcomments_comments} cc
+        $from = "FROM {block_socialcomments_cmmnts} cc
                  JOIN {user} u ON u.id = cc.userid ";
 
-        $fromcount = "FROM {block_socialcomments_comments} cc ";
+        $fromcount = "FROM {block_socialcomments_cmmnts} cc ";
 
         $params = array();
 
@@ -244,7 +244,7 @@ class report_helper {
 
             // Get counts per context.
             $sql = "SELECT cc.contextid, count(cc.id) as count
-                FROM {block_socialcomments_comments} cc
+                FROM {block_socialcomments_cmmnts} cc
                 WHERE cc.contextid {$incontext}
                 GROUP BY cc.contextid ";
 
@@ -286,7 +286,7 @@ class report_helper {
         if ((empty($filterdata->sectionid)) && empty($filterdata->activityid)) {
 
             $coursecontext = \context_course::instance($filterdata->courseid);
-            $commentscount = $DB->count_records('block_socialcomments_comments', array('contextid' => $coursecontext->id));
+            $commentscount = $DB->count_records('block_socialcomments_cmmnts', array('contextid' => $coursecontext->id));
 
             $sqlvalues = (object) array(
                     'usernamefields' => $usernamefields,
@@ -484,7 +484,7 @@ class report_helper {
                 $authorfields, $authorpicturefields, bc.contextid as postcontextid
                 FROM {block_socialcomments_replies} r
                 JOIN {user} u ON r.userid = u.id
-                JOIN {block_socialcomments_comments} bc ON bc.id = r.commentid
+                JOIN {block_socialcomments_cmmnts} bc ON bc.id = r.commentid
                 JOIN {context} ctx ON ctx.id = bc.contextid ";
 
         $cond = array();
@@ -519,7 +519,7 @@ class report_helper {
         // Get new comments or needed comments.
         $sql = "SELECT bc.id as postid, bc.content, bc.timecreated, bc.userid,
                 u.id, $authorfields, $authorpicturefields, bc.contextid as postcontextid, bc.groupid
-                FROM {block_socialcomments_comments} bc
+                FROM {block_socialcomments_cmmnts} bc
                 JOIN {user} u ON bc.userid = u.id
                 JOIN {context} ctx ON ctx.id = bc.contextid ";
 
@@ -571,7 +571,7 @@ class report_helper {
         // Get pinned page comments.
         $sql = "SELECT bc.id as postid, bc.content, bc.timecreated, bc.userid,
                 u.id, $authorfields, $authorpicturefields, bc.contextid as postcontextid, bc.groupid
-                FROM {block_socialcomments_comments} bc
+                FROM {block_socialcomments_cmmnts} bc
                 JOIN {block_socialcomments_pins} p ON p.itemid = bc.contextid AND p.itemtype = :itemtype AND p.userid = :thisuserid
                 JOIN {user} u ON bc.userid = u.id
                 JOIN {context} ctx ON ctx.id = bc.contextid ";
@@ -594,7 +594,7 @@ class report_helper {
         // Get all comments of this course this user has individually pinned.
         $sql = "SELECT bc.id as postid, bc.content, bc.timecreated, bc.userid,
                 u.id, $authorfields, $authorpicturefields, bc.contextid as postcontextid, bc.groupid
-                FROM {block_socialcomments_comments} bc
+                FROM {block_socialcomments_cmmnts} bc
                 JOIN {block_socialcomments_pins} p ON p.itemid = bc.id AND p.itemtype = :itemtype AND p.userid = :thisuserid
                 JOIN {user} u ON bc.userid = u.id
                 JOIN {context} ctx ON ctx.id = bc.contextid ";

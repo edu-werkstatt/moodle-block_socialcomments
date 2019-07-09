@@ -75,7 +75,7 @@ class block_socialcomments_digest_testcase extends advanced_testcase {
         $comment2 = $plugingenerator->create_comment($cparams);
 
         // Check.
-        $count = $DB->count_records('block_socialcomments_comments');
+        $count = $DB->count_records('block_socialcomments_cmmnts');
         $this->assertEquals(2, $count);
 
         // Subscribe student1 to context of course1.
@@ -146,12 +146,12 @@ class block_socialcomments_digest_testcase extends advanced_testcase {
 
         // Check delete events.
         delete_user($student1);
-        $subscripts = $DB->get_records('block_socialcomments_subscripts', array('userid' => $student1->id));
+        $subscripts = $DB->get_records('block_socialcomments_subscrs', array('userid' => $student1->id));
         $this->assertEmpty($subscripts);
 
         delete_course($course);
         delete_course($course2);
-        $comments = $DB->get_records('block_socialcomments_comments');
+        $comments = $DB->get_records('block_socialcomments_cmmnts');
 
         $this->assertEmpty($comments);
 

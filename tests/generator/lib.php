@@ -78,9 +78,9 @@ class block_socialcomments_generator extends component_generator_base {
         }
 
         $comment = (object) $record;
-        $id = $DB->insert_record('block_socialcomments_comments', $comment);
+        $id = $DB->insert_record('block_socialcomments_cmmnts', $comment);
 
-        return $DB->get_record('block_socialcomments_comments', array('id' => $id));
+        return $DB->get_record('block_socialcomments_cmmnts', array('id' => $id));
     }
 
     public function create_reply($record = null) {
@@ -147,9 +147,9 @@ class block_socialcomments_generator extends component_generator_base {
         }
 
         $subscription = (object) $record;
-        $id = $DB->insert_record('block_socialcomments_subscripts', $subscription);
+        $id = $DB->insert_record('block_socialcomments_subscrs', $subscription);
 
-        return $DB->get_record('block_socialcomments_subscripts', array('id' => $id));
+        return $DB->get_record('block_socialcomments_subscrs', array('id' => $id));
     }
 
 }

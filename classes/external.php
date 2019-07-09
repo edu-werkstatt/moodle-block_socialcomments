@@ -25,6 +25,11 @@ global $CFG;
 
 require_once("$CFG->libdir/externallib.php");
 
+/**
+ * @package   block_socialcomments
+ * @copyright 2017 Andreas Wagner, Synergy Learning
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class block_socialcomments_external extends external_api {
 
     /**
@@ -234,9 +239,9 @@ class block_socialcomments_external extends external_api {
         $checked = $commentshelper->set_pinned($context->id, $USER->id, $checked, $commentid);
 
         if ($commentid == 0) {
-            $tooltip = ($checked)? get_string('unpinpage', 'block_socialcomments') : get_string('pinpage', 'block_socialcomments') ;
+            $tooltip = ($checked) ? get_string('unpinpage', 'block_socialcomments') : get_string('pinpage', 'block_socialcomments');
         } else {
-            $tooltip = ($checked)? get_string('unpin', 'block_socialcomments') : get_string('pin', 'block_socialcomments') ;
+            $tooltip = ($checked) ? get_string('unpin', 'block_socialcomments') : get_string('pin', 'block_socialcomments');
         }
 
         $results = array(
