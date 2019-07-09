@@ -15,6 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Specialised restore task for the socialcomments block.
+ *
  * @package    block_socialcomments
  * @subpackage backup-moodle2
  * @copyright  2019 Paul Steffen, EDU-Werkstatt GmbH
@@ -26,7 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once(__DIR__ . '/restore_socialcomments_stepslib.php');
 
 /**
- * Specialised restore task for the socialcomments block.
+ * Class implementing the restore tasks.
  *
  * @copyright  2019 Paul Steffen, EDU-Werkstatt GmbH
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later

@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Block socialcomments backup steplib.
+ * Block socialcomments backup stepslib.
  *
  * @package    block_socialcomments
  * @subpackage backup-moodle2
@@ -36,7 +36,6 @@ class backup_socialcomments_block_structure_step extends backup_block_structure_
     /**
      *  Define the complete structure for backup.
      */
-
     protected function define_structure() {
         // To know if we are including userinfo.
         $userinfo = $this->get_setting_value('users');
@@ -112,10 +111,8 @@ class backup_socialcomments_block_structure_step extends backup_block_structure_
                                        FROM {block_socialcomments_subscrs}
                                        WHERE courseid = ?', array(backup::VAR_COURSEID));
 
-            /**
-             * We don't use backup::VAR_CONTEXTID in this query since we
-             * require the course contextid, not the block contextid.
-             */
+            // We don't use backup::VAR_CONTEXTID in this query since we
+            // require the course contextid, not the block contextid.
             $pin->set_source_sql('SELECT p.*
                                         FROM {block_socialcomments_pins} p
                                         JOIN {block_socialcomments_cmmnts} c

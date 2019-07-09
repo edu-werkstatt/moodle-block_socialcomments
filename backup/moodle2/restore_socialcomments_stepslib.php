@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Block socialcomments restore steplib.
+ * Block socialcomments restore stepslib.
  *
  * @package    block_socialcomments
  * @subpackage backup-moodle2
@@ -26,7 +26,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * Define the complete socialcomments  structure for restore
+ * Block socialcomments restore structure step class.
  *
  * @copyright  2019 Paul Steffen, EDU-Werkstatt GmbH
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -34,7 +34,7 @@ defined('MOODLE_INTERNAL') || die();
 class restore_socialcomments_block_structure_step extends restore_structure_step {
 
     /**
-     * Define structure.
+     * Define the structure for restoring a socialcomments block.
      */
     protected function define_structure() {
         $paths = array();
@@ -49,8 +49,7 @@ class restore_socialcomments_block_structure_step extends restore_structure_step
     /**
      * Restore comment entries.
      *
-     * @global type $DB
-     * @param type $data
+     * @param object $data
      */
     public function process_comment($data) {
         global $DB;
@@ -74,8 +73,7 @@ class restore_socialcomments_block_structure_step extends restore_structure_step
     /**
      * Restore reply entries.
      *
-     * @global type $DB
-     * @param type $data
+     * @param object $data
      */
     public function process_comment_reply($data) {
         global $DB;
@@ -90,8 +88,7 @@ class restore_socialcomments_block_structure_step extends restore_structure_step
     /**
      * Restore pin entries.
      *
-     * @global type $DB
-     * @param type $data
+     * @param object $data
      */
     public function process_pin($data) {
       global $DB;
@@ -110,8 +107,7 @@ class restore_socialcomments_block_structure_step extends restore_structure_step
     /**
      * Restore subscription entries.
      *
-     * @global type $DB
-     * @param type $data
+     * @param object $data
      */
     public function process_subscription($data) {
         global $DB;
