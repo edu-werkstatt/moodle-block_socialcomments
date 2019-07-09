@@ -38,8 +38,8 @@ class backup_socialcomments_block_structure_step extends backup_block_structure_
      */
 
     protected function define_structure() {
-        // To know if we are including userinfo
-        $userinfo = true;// $this->get_setting_value('userinfo');
+        // To know if we are including userinfo.
+        $userinfo = $this->get_setting_value('users');
 
         // The plugin uses the course context instead of the block context.
         $courseid = $this->get_courseid();
