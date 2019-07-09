@@ -23,9 +23,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once (__DIR__ . '/restore_socialcomments_stepslib.php');
-#require_once (__DIR__ . '/../../classes/local/comments_helper.php');
-
+require_once(__DIR__ . '/restore_socialcomments_stepslib.php');
 
 /**
  * Specialised restore task for the socialcomments block.

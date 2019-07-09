@@ -25,8 +25,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once (__DIR__ . '/backup_socialcomments_stepslib.php');
-//require_once (__DIR__ . '/backup_socialcomments_settingslib.php'); // optional
+require_once(__DIR__ . '/backup_socialcomments_stepslib.php');
 
 /**
  * Class implementing the backup tasks.

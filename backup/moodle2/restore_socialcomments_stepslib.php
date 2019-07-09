@@ -101,7 +101,7 @@ class restore_socialcomments_block_structure_step extends restore_structure_step
 
       if ($data->itemtype == block_socialcomments\local\comments_helper::PINNED_PAGE) {
           $data->itemid = context_course::instance($courseid)->id;
-      } elseif ($data->itemtype == block_socialcomments\local\comments_helper::PINNED_COMMENT) {
+        } else if ($data->itemtype == block_socialcomments\local\comments_helper::PINNED_COMMENT) {
           $data->itemid =  $this->get_mappingid('block_socialcomments_cmmnts', $data->itemid);
       }
       $newitemid = $DB->insert_record('block_socialcomments_pins', $data);

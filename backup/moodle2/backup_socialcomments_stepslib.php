@@ -33,9 +33,6 @@ defined('MOODLE_INTERNAL') || die();
  */
 class backup_socialcomments_block_structure_step extends backup_block_structure_step {
 
-    public function execute() {
-        parent::execute();
-    }
     /**
      *  Define the complete structure for backup.
      */
