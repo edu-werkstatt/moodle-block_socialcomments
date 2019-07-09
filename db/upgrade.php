@@ -33,27 +33,27 @@ defined('MOODLE_INTERNAL') || die();
 function xmldb_block_socialcomments_upgrade($oldversion) {
     global $DB;
     $dbman = $DB->get_manager();
-    
-     if ($oldversion < 2019042501) {
-       
+
+    if ($oldversion < 2019042501) {
+
         $table = new xmldb_table('block_scomments_comments');
         if ($dbman->table_exists($table)) {
-          $dbman->rename_table($table, 'block_socialcomments_cmmnts');          
+            $dbman->rename_table($table, 'block_socialcomments_cmmnts');
         }
-        
+
         $table = new xmldb_table('block_scomments_subscripts');
         if ($dbman->table_exists($table)) {
-          $dbman->rename_table($table, 'block_socialcomments_subscrs');          
+            $dbman->rename_table($table, 'block_socialcomments_subscrs');
         }
 
         $table = new xmldb_table('block_scomments_pins');
         if ($dbman->table_exists($table)) {
-          $dbman->rename_table($table, 'block_socialcomments_pins');          
+            $dbman->rename_table($table, 'block_socialcomments_pins');
         }
 
         $table = new xmldb_table('block_scomments_replies');
         if ($dbman->table_exists($table)) {
-          $dbman->rename_table($table, 'block_socialcomments_replies');          
+            $dbman->rename_table($table, 'block_socialcomments_replies');
         }
     }
     return true;
