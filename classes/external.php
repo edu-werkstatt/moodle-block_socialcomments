@@ -360,8 +360,7 @@ class block_socialcomments_external extends external_api {
      * Save a comment.
      *
      * @param int $contextid
-     * @param int $userid
-     * @param string $content
+     * @param int $pagenumber
      * @return array of results
      */
     public static function get_commentspage($contextid, $pagenumber) {
@@ -498,12 +497,10 @@ class block_socialcomments_external extends external_api {
     }
 
     /**
-     * Delete a comment.
+     * Delete a reply.
      *
-     * @param int $contextid
-     * @param int $userid, note that userid is the user running the script NOT author of comment.
-     * @param int $commentid
-     * @return array
+     * @param int $replyid ID of the reply.
+     * @return array of results
      */
     public static function delete_reply($replyid) {
 
