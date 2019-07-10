@@ -61,8 +61,10 @@ class block_socialcomments_external extends external_api {
     /**
      * Save a comment.
      *
-     * @param int $contextid the id of the context, when creating a new comment.
+     * @param int $contextid The id of the context, when creating a new comment.
      * @param string $content
+     * @param int $groupid
+     * @param int $id
      * @return array of results
      */
     public static function save_comment($contextid, $content, $groupid, $id) {
@@ -431,8 +433,10 @@ class block_socialcomments_external extends external_api {
     /**
      * Save a reply.
      *
-     * @param int $contextid
-     * @param string $content
+     * @param int $contextid ID of the context.
+     * @param string $content Content of the reply.
+     * @param int $commentid
+     * @param int $id
      * @return array of results
      */
     public static function save_reply($contextid, $content, $commentid, $id) {
@@ -562,9 +566,9 @@ class block_socialcomments_external extends external_api {
     /**
      * Get options for the activity select form element.
      *
-     * @param int $courseid
-     * @param int $sectionid
-     * @return array
+     * @param int $sectionid ID of the section.
+     * @param int $courseid ID of the course.
+     * @return array of results
      */
     public static function get_activity_options($sectionid, $courseid) {
 
