@@ -58,7 +58,7 @@ class restore_socialcomments_block_structure_step extends restore_structure_step
         $data->courseid = $this->get_courseid();
         $data->contextid = context_course::instance($data->courseid)->id;
         $data->userid = $this->get_mappingid('user', $data->userid);
-        // TODO: Check if groupid mapping is required.
+        $data->groupid = $this->get_mappingid('group', $data->groupid);
 
         $newitemid = $DB->insert_record('block_socialcomments_cmmnts', $data);
         $this->set_mapping('block_socialcomments_cmmnts', $oldid, $newitemid);
