@@ -39,7 +39,7 @@ class backup_socialcomments_block_task extends backup_block_task {
      * Define (add) particular settings that each block can have.
      */
     protected function define_my_settings() {
-      // No particular settings for this activity.
+        // No particular settings for this activity.
     }
 
     /**

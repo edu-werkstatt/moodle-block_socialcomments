@@ -112,21 +112,20 @@ class backup_socialcomments_block_structure_step extends backup_block_structure_
             // Since the socialcomments block works with the course context in place of the block context,
             // we use the value from $contextid instead of backup::VAR_CONTEXTID.
             $courseid = $this->get_courseid();
-            $contextid = context_course::instance($courseid)->id;            
+            $contextid = context_course::instance($courseid)->id;
             $pin->set_source_sql('SELECT p.*
-                                        FROM {block_socialcomments_pins} p
-                                        JOIN {block_socialcomments_cmmnts} c
-                                        ON p.itemid = c.id
-                                        AND p.itemtype = '.comments_helper::PINNED_COMMENT.'
-                                        AND c.courseid = ?
-                                        UNION
-                                        SELECT p.* FROM {block_socialcomments_pins} p
-                                        WHERE p.itemid = '.$contextid.'
-                                        AND p.itemtype = '.comments_helper::PINNED_PAGE.'
-                                        ORDER BY id',
-                                    array(
-                                        backup::VAR_COURSEID,
-                                    ));
+                                  FROM {block_socialcomments_pins} p
+                                  JOIN {block_socialcomments_cmmnts} c
+                                  ON p.itemid = c.id
+                                  AND p.itemtype = '.comments_helper::PINNED_COMMENT.'
+                                  AND c.courseid = ?
+                                  UNION
+                                  SELECT p.* FROM {block_socialcomments_pins} p
+                                  WHERE (p.itemid = '.$contextid.')
+                                  AND (p.itemtype = '.comments_helper::PINNED_PAGE.')',
+                                  array(
+                                      backup::VAR_COURSEID,
+                                  ));
         }
 
         // Define id annotations.

@@ -92,17 +92,17 @@ class restore_socialcomments_block_structure_step extends restore_structure_step
      * @param object $data Data for pin entries.
      */
     public function process_pin($data) {
-      global $DB;
-      $data = (object)$data;
-      $courseid = $this->get_courseid();
-      $data->userid = $this->get_mappingid('user', $data->userid);
+        global $DB;
+        $data = (object)$data;
+        $courseid = $this->get_courseid();
+        $data->userid = $this->get_mappingid('user', $data->userid);
 
-      if ($data->itemtype == block_socialcomments\local\comments_helper::PINNED_PAGE) {
-          $data->itemid = context_course::instance($courseid)->id;
+        if ($data->itemtype == block_socialcomments\local\comments_helper::PINNED_PAGE) {
+            $data->itemid = context_course::instance($courseid)->id;
         } else if ($data->itemtype == block_socialcomments\local\comments_helper::PINNED_COMMENT) {
-          $data->itemid =  $this->get_mappingid('block_socialcomments_cmmnts', $data->itemid);
-      }
-      $newitemid = $DB->insert_record('block_socialcomments_pins', $data);
+            $data->itemid = $this->get_mappingid('block_socialcomments_cmmnts', $data->itemid);
+        }
+        $newitemid = $DB->insert_record('block_socialcomments_pins', $data);
     }
 
     /**
