@@ -331,4 +331,24 @@ class block_socialcomments_testcase extends provider_testcase {
         $this->assertFalse($result['error']);
         $this->assertEquals($commentid, $result['data']['commentid']);
      }
+
+     /**
+      * Call external API to create a reply.
+      */
+     protected function add_reply($coursecontext, $user, $commentid, $content = 'Reply') {
+         global $USER;
+         $this->setUser($user);
+         // Needed for calling the webservice without sesskey.
+         $USER->ignoresesskey = true;
+
+         $params = array(
+             'contextid' => $coursecontext->id,
+             'content' => $content,
+             'commentid' => $commentid,
+             'id' => 0
+         );
+         $result = external_api::call_external_function('block_socialcomments_save_reply', $params);
+         var_dump($result);
+         $this->assertFalse($result['error']);
+     }
 }
