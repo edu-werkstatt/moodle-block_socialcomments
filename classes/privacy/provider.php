@@ -407,9 +407,15 @@ class provider implements
      */
     public static function delete_data_for_user(approved_contextlist $contextlist) {
         global $DB;
-        $DB->delete_records('block_socialcomments_cmmnts', ['userid' => $userid]);
-        $DB->delete_records('block_socialcomments_replies', ['userid' => $userid]);
-        $DB->delete_records('block_socialcomments_subsrs', ['userid' => $userid]);
-        $DB->delete_records('block_socialcomments_pins', ['userid' => $userid]);
+        $user = \core_user::get_user($contextlist->get_user()->id);
+        foreach ($contextlist as $context) {
+            if ($context->contextlevel == CONTEXT_COURSE) {
+                self::delete_all_comment_dependant_data($context, $user->id);
+            }
+        }
+        $DB->delete_records('block_socialcomments_cmmnts', ['userid' => $user->id]);
+        $DB->delete_records('block_socialcomments_replies', ['userid' => $user->id]);
+        $DB->delete_records('block_socialcomments_subscrs', ['userid' => $user->id]);
+        $DB->delete_records('block_socialcomments_pins', ['userid' => $user->id]);
     }
 }
