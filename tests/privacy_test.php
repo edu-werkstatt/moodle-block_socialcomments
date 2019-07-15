@@ -379,6 +379,150 @@ class block_socialcomments_testcase extends provider_testcase {
      * Test that user data is deleted for this user.
      */
     public function test_delete_data_for_user() {
+        global $DB;
+        $component = 'block_socialcomments';
+        $this->resetAfterTest();
+        $generator = $this->getDataGenerator();
+
+
+        // Create courses and users.
+        $student = $generator->create_user();
+        $studentcontext = context_user::instance($student->id);
+        $teacher = $generator->create_user();
+        $teachercontext = context_user::instance($teacher->id);
+
+        $course0 = $generator->create_course();
+        $coursecontext0 = context_course::instance($course0->id);
+        $course1 = $generator->create_course();
+        $coursecontext1 = context_course::instance($course1->id);
+
+        // Enrol users to courses.
+        $generator->enrol_user($student->id, $course0->id, 'student');
+        $generator->enrol_user($teacher->id, $course0->id, 'editingteacher');
+        $generator->enrol_user($student->id, $course1->id, 'student');
+        $generator->enrol_user($teacher->id, $course1->id, 'editingteacher');
+
+        // Check no data is found before test data is created.
+        $coursecontext0 = context_course::instance($course0->id);
+        $userlist = new \core_privacy\local\request\userlist($coursecontext0, 'block_socialcomments');
+        provider::get_users_in_context($userlist);
+        $this->assertCount(0, $userlist);
+
+        $coursecontext1 = context_course::instance($course1->id);
+        $userlist = new \core_privacy\local\request\userlist($coursecontext1, 'block_socialcomments');
+        provider::get_users_in_context($userlist);
+        $this->assertCount(0, $userlist);
+
+        // Create data in $course0.
+        $this->set_pinned($coursecontext0, $teacher);
+        $commentid = $this->save_comment($coursecontext0, $student, 'Student comment0 in course0');
+        $this->save_reply($coursecontext0, $teacher, $commentid, 'Teacher reply0 to student comment0 in course0.');
+        $this->save_reply($coursecontext0, $student, $commentid, 'Student reply0 to student comment0 in course0.');
+        $commentid = $this->save_comment($coursecontext0, $student, 'Student comment1 in course0');
+        $this->set_pinned($coursecontext0, $teacher, $commentid);
+        $this->set_pinned($coursecontext0, $student, $commentid);
+
+        // Create data in $course1.
+        $commentid = $this->save_comment($coursecontext1, $teacher, 'Teacher comment0 in course1');
+        $this->save_reply($coursecontext1, $teacher, $commentid, 'Teacher reply0 to teacher comment0 in course1.');
+        $this->set_subscribed($coursecontext1, $student);
+
+        // Confirm data is present.
+        $params = [];
+        $result = $DB->count_records('block_socialcomments_cmmnts', $params);
+        $this->assertEquals(3, $result);
+        $result = $DB->count_records('block_socialcomments_replies', $params);
+        $this->assertEquals(3, $result);
+        $result = $DB->count_records('block_socialcomments_pins', $params);
+        $this->assertEquals(3, $result);
+        $result = $DB->count_records('block_socialcomments_subscrs', $params);
+        $this->assertEquals(3, $result);
+
+        // Attempt system context deletion (should have no effect).
+        $systemcontext = context_system::instance();
+        $approvedlist = new approved_contextlist($teacher, $component, [$systemcontext->id]);
+        provider::delete_data_for_user($approvedlist);
+
+        // Confirm data is still present.
+        $params = [];
+        $result = $DB->count_records('block_socialcomments_cmmnts', $params);
+        $this->assertEquals(3, $result);
+        $result = $DB->count_records('block_socialcomments_replies', $params);
+        $this->assertEquals(3, $result);
+        $result = $DB->count_records('block_socialcomments_pins', $params);
+        $this->assertEquals(3, $result);
+        $result = $DB->count_records('block_socialcomments_subscrs', $params);
+        $this->assertEquals(3, $result);
+
+        // Attempt to delete data in other user context (should have no effect).
+        $approvedlist = new approved_contextlist($teacher, $component, [$studentcontext->id]);
+        provider::delete_data_for_user($approvedlist);
+
+        // Confirm data is still present.
+        $params = [];
+        $result = $DB->count_records('block_socialcomments_cmmnts', $params);
+        $this->assertEquals(3, $result);
+        $result = $DB->count_records('block_socialcomments_replies', $params);
+        $this->assertEquals(3, $result);
+        $result = $DB->count_records('block_socialcomments_pins', $params);
+        $this->assertEquals(3, $result);
+        $result = $DB->count_records('block_socialcomments_subscrs', $params);
+        $this->assertEquals(3, $result);
+
+        // Delete teacher data in the users own context (should have no effect).
+        $approvedlist = new approved_contextlist($teacher, $component, [$teachercontext->id]);
+        provider::delete_data_for_user($approvedlist);
+
+        // Confirm data is still present.
+        $params = [];
+        $result = $DB->count_records('block_socialcomments_cmmnts', $params);
+        $this->assertEquals(3, $result);
+        $result = $DB->count_records('block_socialcomments_replies', $params);
+        $this->assertEquals(3, $result);
+        $result = $DB->count_records('block_socialcomments_pins', $params);
+        $this->assertEquals(3, $result);
+        $result = $DB->count_records('block_socialcomments_subscrs', $params);
+        $this->assertEquals(3, $result);
+
+        // Delete teacher data in their own user context (should have no effect).
+        $approvedlist = new approved_contextlist($teacher, $component, [$teachercontext->id]);
+        provider::delete_data_for_user($approvedlist);
+
+        // Confirm data is still present.
+        $params = [];
+        $result = $DB->count_records('block_socialcomments_cmmnts', $params);
+        $this->assertEquals(3, $result);
+        $result = $DB->count_records('block_socialcomments_replies', $params);
+        $this->assertEquals(3, $result);
+        $result = $DB->count_records('block_socialcomments_pins', $params);
+        $this->assertEquals(3, $result);
+        $result = $DB->count_records('block_socialcomments_subscrs', $params);
+        $this->assertEquals(3, $result);
+
+        // Delete data for teacher in specified course context.
+        $approvedlist = new approved_contextlist($teacher, $component, [$coursecontext0->id]);
+        provider::delete_data_for_user($approvedlist);
+
+        // Confirm only teacher data is deleted.
+        $params = ['userid' => $student->id];
+        $result = $DB->count_records('block_socialcomments_cmmnts', $params);
+        $this->assertEquals(2, $result);
+        $result = $DB->count_records('block_socialcomments_replies', $params);
+        $this->assertEquals(1, $result);
+        $result = $DB->count_records('block_socialcomments_pins', $params);
+        $this->assertEquals(1, $result);
+        $result = $DB->count_records('block_socialcomments_subscrs', $params);
+        $this->assertEquals(2, $result);
+
+        $params['userid'] = $teacher->id;
+        $result = $DB->count_records('block_socialcomments_cmmnts', $params);
+        $this->assertEquals(1, $result);
+        $result = $DB->count_records('block_socialcomments_replies', $params);
+        $this->assertEquals(1, $result);
+        $result = $DB->count_records('block_socialcomments_pins', $params);
+        $this->assertEquals(0, $result);
+        $result = $DB->count_records('block_socialcomments_subscrs', $params);
+        $this->assertEquals(1, $result);
     }
 
     /**
