@@ -120,8 +120,7 @@ class block_socialcomments_testcase extends provider_testcase {
 
         $this->assertEmpty(provider::get_contexts_for_userid($user->id));
 
-        // Create a comment.
-        $this->add_comment($coursecontext, $user, 'Comment0');
+        $this->save_comment($coursecontext, $user, 'Comment0');
 
         $comment = $DB->get_record('block_socialcomments_cmmnts', array('userid' => $user->id));
         $this->assertNotFalse($comment);
@@ -154,8 +153,8 @@ class block_socialcomments_testcase extends provider_testcase {
 
 
         // Generate some data.
-        $commentid0 = $this->add_comment($coursecontext, $student, 'Comment0');
-        $commentid1 = $this->add_comment($coursecontext, $student, 'Comment1');
+        $commentid0 = $this->save_comment($coursecontext, $student, 'Comment0');
+        $commentid1 = $this->save_comment($coursecontext, $student, 'Comment1');
 
         // Confirm data is present.
         $params = [
@@ -201,10 +200,10 @@ class block_socialcomments_testcase extends provider_testcase {
         // Generate some data for both users.
 
         // Crate a pin to course context for teacher.
-        $this->add_pin($coursecontext, $teacher);
+        $this->set_pinned($coursecontext, $teacher);
 
         // Create a comment for student.
-        $this->add_comment($coursecontext, $student, 'Comment0');
+        $commentid = $this->save_comment($coursecontext, $student, 'Comment0');
 
         $userlist = new \core_privacy\local\request\userlist($coursecontext, 'block_socialcomments');
         provider::get_users_in_context($userlist);
@@ -219,6 +218,89 @@ class block_socialcomments_testcase extends provider_testcase {
      * Test that data for users in approved userlist is deleted.
      */
     public function test_delete_data_for_users() {
+        global $DB;
+
+        $this->resetAfterTest();
+        $generator = $this->getDataGenerator();
+        $component = 'block_socialcomments';
+
+        $student = $generator->create_user();
+        $studentcontext = context_user::instance($student->id);
+        $teacher = $generator->create_user();
+        $teachercontext = context_user::instance($teacher->id);
+
+        // Enrol users in course and add course items.
+        $course1 = $generator->create_course();
+        $generator->enrol_user($student->id, $course1->id, 'student');
+        $generator->enrol_user($teacher->id, $course1->id, 'editingteacher');
+
+        $course2 = $generator->create_course();
+        $generator->enrol_user($student->id, $course2->id, 'student');
+        $generator->enrol_user($teacher->id, $course2->id, 'editingteacher');
+
+        // Generate data for each user.
+        $i = 0;
+        $users = [$student, $teacher];
+        $courses = [$course1, $course2];
+
+        foreach ($courses as $course) {
+            $coursecontext = context_course::instance($course->id);
+            foreach ($users as $user) {
+                // Create a comment.
+                $commentid = $this->save_comment($coursecontext, $user, "Comment{i}");
+                $i++;
+            }
+        }
+
+        // Confirm data is present for both users.
+        $params = [
+            'userid' => $teacher->id,
+        ];
+        $result = $DB->count_records('block_socialcomments_cmmnts', $params);
+        $this->assertEquals(2, $result);
+
+        $params = [
+            'userid' => $student->id,
+        ];
+        $result = $DB->count_records('block_socialcomments_cmmnts', $params);
+        $this->assertEquals(2, $result);
+
+        // Attempt system context deletion (should have no effect).
+        $systemcontext = context_system::instance();
+        $approvedlist = new approved_userlist($systemcontext, $component, [$student->id, $teacher->id]);
+        provider::delete_data_for_users($approvedlist);
+
+        $params = [];
+        $result = $DB->count_records('block_socialcomments_cmmnts', $params);
+        $this->assertEquals(4, $result);
+
+        // Attempt to delete data in another user's context (should have no effect).
+        $approvedlist = new approved_userlist($studentcontext, $component, [$teacher->id]);
+        provider::delete_data_for_users($approvedlist);
+
+        $result = $DB->count_records('block_socialcomments_cmmnts', $params);
+        $this->assertEquals(4, $result);
+
+        // Delete users' data in teacher's context.
+        $approvedlist = new approved_userlist($teachercontext, $component, [$student->id, $teacher->id]);
+        provider::delete_data_for_users($approvedlist);
+
+        // Attempt to delete data in user's own context (should have no effect).
+        $params = [];
+        $result = $DB->count_records('block_socialcomments_cmmnts', $params);
+        $this->assertEquals(4, $result);
+
+        // Delete user's data in course context.
+        $approvedlist = new approved_userlist($coursecontext, $component, [$student->id]);
+        provider::delete_data_for_users($approvedlist);
+
+        $params = ['userid' => $student->id];
+        $result = $DB->count_records('block_socialcomments_cmmnts', $params);
+        $this->assertEquals(0, $result);
+
+        $params['userid'] = $teacher->id;
+        $result = $DB->count_records('block_socialcomments_cmmnts', $params);
+        $this->assertEquals(2, $result);
     }
 
     /**
@@ -252,7 +334,7 @@ class block_socialcomments_testcase extends provider_testcase {
             $coursecontext = context_course::instance($course->id);
             foreach ($users as $user) {
                 // Create a comment.
-                $this->add_comment($coursecontext, $user, "Comment{i}");
+                $this->save_comment($coursecontext, $user, "Comment{i}");
                 $i++;
             }
         }
@@ -300,15 +382,34 @@ class block_socialcomments_testcase extends provider_testcase {
     }
 
     /**
-     * Call external API to create a comment.
+     * Call external API to create a reply.
      */
-    protected function add_comment($coursecontext, $user, $content = 'Comment') {
+    protected function save_reply($context, $user, $commentid, $content = 'Reply') {
         global $USER;
         $this->setUser($user);
         // Needed for calling the webservice without sesskey.
         $USER->ignoresesskey = true;
 
-        $params = array('contextid' => $coursecontext->id, 'content' => $content, 'groupid' => 0, 'id' => 0);
+        $params = array(
+            'contextid' => $context->id,
+            'content' => $content,
+            'commentid' => $commentid,
+            'id' => 0
+        );
+        $result = external_api::call_external_function('block_socialcomments_save_reply', $params);
+        $this->assertFalse($result['error']);
+    }
+
+    /**
+     * Call external API to create a comment.
+     */
+    protected function save_comment($context, $user, $content = 'Comment') {
+        global $USER;
+        $this->setUser($user);
+        // Needed for calling the webservice without sesskey.
+        $USER->ignoresesskey = true;
+
+        $params = array('contextid' => $context->id, 'content' => $content, 'groupid' => 0, 'id' => 0);
         $result = external_api::call_external_function('block_socialcomments_save_comment', $params);
         $this->assertFalse($result['error']);
         return $result['data']['id'];
@@ -317,38 +418,35 @@ class block_socialcomments_testcase extends provider_testcase {
     /**
      * Call external API to create a pin.
      */
-    protected function add_pin($coursecontext, $user, $commentid = 0) {
+    protected function set_pinned($context, $user, $commentid = 0) {
         global $USER;
         $this->setUser($user);
         // Needed for calling the webservice without sesskey.
         $USER->ignoresesskey = true;
         $params = array(
-            'contextid' => $coursecontext->id,
+            'contextid' => $context->id,
             'checked' => true,
             'commentid' => $commentid
         );
         $result = external_api::call_external_function('block_socialcomments_set_pinned', $params);
         $this->assertFalse($result['error']);
         $this->assertEquals($commentid, $result['data']['commentid']);
-     }
+    }
 
-     /**
-      * Call external API to create a reply.
-      */
-     protected function add_reply($coursecontext, $user, $commentid, $content = 'Reply') {
-         global $USER;
-         $this->setUser($user);
-         // Needed for calling the webservice without sesskey.
-         $USER->ignoresesskey = true;
-
-         $params = array(
-             'contextid' => $coursecontext->id,
-             'content' => $content,
-             'commentid' => $commentid,
-             'id' => 0
-         );
-         $result = external_api::call_external_function('block_socialcomments_save_reply', $params);
-         var_dump($result);
-         $this->assertFalse($result['error']);
-     }
+    /**
+     * Call external API to subscribe user to course context.
+     */
+    protected function set_subscribed($context, $user) {
+        global $USER;
+        $this->setUser($user);
+        // Needed for calling the webservice without sesskey.
+        $USER->ignoresesskey = true;
+        // Subscribe to context...
+        $params = array(
+            'contextid' => $context->id,
+            'checked' => true,
+        );
+        $result = external_api::call_external_function('block_socialcomments_set_subscribed', $params);
+        $this->assertFalse($result['error']);
+    }
 }
