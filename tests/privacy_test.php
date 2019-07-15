@@ -15,11 +15,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Base class for unit tests for block_socialcomments.
+ * Block socialcomments privacy provider tests.
  *
  * @package   block_socialcomments
  * @copyright 2019 Paul Steffen, EDU-Werkstatt GmbH
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @since      Moodle 3.6
  */
 
 defined('MOODLE_INTERNAL') || die();
@@ -47,7 +48,6 @@ class block_socialcomments_testcase extends provider_testcase {
     public function setUp() {
         $this->resetAfterTest(true);
     }
-
 
     /**
      * Test for provider::get_metadata().

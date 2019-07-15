@@ -105,10 +105,6 @@ class provider implements
     /**
      * Get the list of contexts that contain user information for the specified user.
      *
-     * In the case of socialcomments, this is the context of any course where
-     * the user subscribed for comments, has made a comment or the user has
-     * pinned or replied to some comment.
-     *
      * @param int $userid The user to search.
      * @return contextlist $contextlist  The list of contexts used in this plugin.
      */
@@ -213,8 +209,7 @@ class provider implements
             SELECT p.* FROM {block_socialcomments_pins} p
             WHERE (p.itemid = :page_contextid)
             AND (p.itemtype = :pin_type_page)";
-        $userlist->add_from_sql('userid', $sql, $params);                                                                                                                                                                                                                                                                                                                                         $userlist->add_from_sql('userid', $sql, $params);
-
+        $userlist->add_from_sql('userid', $sql, $params);
         return $userlist;
     }
 
@@ -303,7 +298,7 @@ class provider implements
         if (!empty($records)) {
             $subscriptions = (object) array_map(function($record) use($context) {
                 global $DB;
-                $course = $DB->get_record('course',['id'=> $record->courseid]);
+                $course = $DB->get_record('course', ['id' => $record->courseid]);
                 return [
                         'course' => format_string($course->fullname),
                         'timelastsent' => transform::datetime($record->timelastsent),
@@ -361,13 +356,15 @@ class provider implements
      * @param \context $context Course context.
      * @param int $userid ID of the user.
      */
-    protected static function delete_all_comment_dependant_data(\context $context, int $userid = NULL) {
+    protected static function delete_all_comment_dependant_data(\context $context, int $userid = null) {
         global $DB;
 
         $conditions = ['contextid' => $context->id];
-        if ($userid !== NULL) { $conditions['userid'] = $userid; }
+        if ($userid !== null) {
+            $conditions['userid'] = $userid;
+        }
 
-        $comments = $DB->get_records('block_socialcomments_cmmnts',$conditions);
+        $comments = $DB->get_records('block_socialcomments_cmmnts', $conditions);
         foreach ($comments as $comment) {
             $DB->delete_records('block_socialcomments_replies', ['commentid' => $comment->id]);
             $DB->delete_records('block_socialcomments_pins', [
@@ -380,18 +377,18 @@ class provider implements
     /**
      * Delete all data for all users in the specified context.
      *
-     * @param \context $context A user context.
+     * @param \context $context The specific context to delete data for.
      */
     public static function delete_data_for_all_users_in_context(\context $context) {
         global $DB;
 
+        // Check thet this is a course context.
         if ($context->contextlevel !== CONTEXT_COURSE) {
             return;
         }
 
-        // Delete replies and pins related to comments from current context.
+        // Delete all replies and pins related to comments from the specified context.
         self::delete_all_comment_dependant_data($context);
-
         $DB->delete_records('block_socialcomments_subscrs', ['contextid' => $context->id]);
         $DB->delete_records('block_socialcomments_pins', [
             'itemid' => $context->id,
@@ -400,7 +397,7 @@ class provider implements
     }
 
     /**
-     * Delete data for multiple users within a single context.
+     * Delete multiple users within a single context.
      *
      * @param approved_userlist $userlist The approved context and user information to delete information for.
      */
@@ -410,7 +407,6 @@ class provider implements
         // right to be forgotten. All attempts should be made to delete this data where practical while still
         // allowing the plugin to be used by other users.
         global $DB;
-
         // Prepare SQL to gather all completed IDs.
         $userids = $userlist->get_userids();
 
