@@ -24,18 +24,18 @@
 
 namespace block_socialcomments\privacy;
 
+defined('MOODLE_INTERNAL') || die();
+
 use core_privacy\local\metadata\collection;
 use core_privacy\local\request\approved_contextlist;
 use core_privacy\local\request\approved_userlist;
 use core_privacy\local\request\contextlist;
 use core_privacy\local\request\deletion_criteria;
 use core_privacy\local\request\helper;
-use core_privacy\local\request\userlist;
 use core_privacy\local\request\transform;
+use core_privacy\local\request\userlist;
 use core_privacy\local\request\writer;
 use \block_socialcomments\local\comments_helper;
-
-defined('MOODLE_INTERNAL') || die();
 
 /**
  * Privacy Subsystem for block block_socialcomments.
@@ -106,7 +106,8 @@ class provider implements
      * Get the list of contexts that contain user information for the specified user.
      *
      * In the case of socialcomments, this is the context of any course where
-     * the user has made a comment or replied to.
+     * the user subscribed for comments, has made a comment or the user has
+     * pinned or replied to some comment.
      *
      * @param int $userid The user to search.
      * @return contextlist $contextlist  The list of contexts used in this plugin.
