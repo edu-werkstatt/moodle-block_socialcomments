@@ -400,21 +400,47 @@ class provider implements
     }
 
     /**
-     * Delete multiple users within a single context.
+     * Delete data for multiple users within a single context.
      *
      * @param approved_userlist $userlist The approved context and user information to delete information for.
      */
     public static function delete_data_for_users(approved_userlist $userlist) {
+        // An approved_contextlist is given and user data related to that user should either be completely deleted,
+        // or overwritten if a structure needs to be maintained. This will be called when a user has requested the
+        // right to be forgotten. All attempts should be made to delete this data where practical while still
+        // allowing the plugin to be used by other users.
         global $DB;
 
-        foreach ($contextlist as $context) {
-            if ($context->contextlevel == CONTEXT_USER && $contextlist->get_user()->id == $context->instanceid) {
-                $DB->delete_records('block_socialcomments_cmmnts', ['userid' => $context->instanceid]);
-                $DB->delete_records('block_socialcomments_replies', ['userid' => $context->instanceid]);
-                $DB->delete_records('block_socialcomments_subsrs', ['userid' => $context->instanceid]);
-                $DB->delete_records('block_socialcomments_pins', ['userid' => $context->instanceid]);
-            }
+        // Prepare SQL to gather all completed IDs.
+        $userids = $userlist->get_userids();
+
+        $context = $userlist->get_context();
+        list($insql, $inparams) = $DB->get_in_or_equal($userids, SQL_PARAMS_NAMED);
+
+        foreach ($userids as $userid) {
+            self::delete_all_comment_dependant_data($context, $userid);
         }
+        // Delete records where user was marked as attending.
+        $DB->delete_records_select(
+            'block_socialcomments_cmmnts',
+            "userid $insql",
+            $inparams
+        );
+        $DB->delete_records_select(
+            'block_socialcomments_replies',
+            "userid $insql",
+            $inparams
+        );
+        $DB->delete_records_select(
+            'block_socialcomments_subscrs',
+            "userid $insql",
+            $inparams
+        );
+        $DB->delete_records_select(
+            'block_socialcomments_pins',
+            "userid $insql",
+            $inparams
+        );
     }
 
     /**
