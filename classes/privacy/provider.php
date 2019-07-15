@@ -373,13 +373,18 @@ class provider implements
     public static function delete_data_for_all_users_in_context(\context $context) {
         global $DB;
 
-        // Only delete data for a user context.
-        if ($context->contextlevel == CONTEXT_USER) {
-            $DB->delete_records('block_socialcomments_cmmnts', ['userid' => $context->instanceid]);
-            $DB->delete_records('block_socialcomments_replies', ['userid' => $context->instanceid]);
-            $DB->delete_records('block_socialcomments_subsrs', ['userid' => $context->instanceid]);
-            $DB->delete_records('block_socialcomments_pins', ['userid' => $context->instanceid]);
+        if ($context->contextlevel !== CONTEXT_COURSE) {
+            return;
         }
+
+        // Delete replies and pins related to comments from current context.
+        self::delete_all_comment_dependant_data($context);
+
+        $DB->delete_records('block_socialcomments_subscrs', ['contextid' => $context->id]);
+        $DB->delete_records('block_socialcomments_pins', [
+            'itemid' => $context->id,
+            'itemtype' => comments_helper::PINNED_PAGE,
+        ]);
     }
 
     /**
