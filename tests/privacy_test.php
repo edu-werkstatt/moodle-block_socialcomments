@@ -173,7 +173,6 @@ class block_socialcomments_testcase extends provider_testcase {
         // Confirm student's data is exported.
         $writer = \core_privacy\local\request\writer::with_context($coursecontext);
         $this->assertTrue($writer->has_any_data());
-        var_dump($writer);
     }
 
     /**
