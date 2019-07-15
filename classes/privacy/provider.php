@@ -185,7 +185,7 @@ class provider implements
 
         // Get userlist by replies.
         $sql = "SELECT r.userid
-            FROM {block_socialcomments_replies}
+            FROM {block_socialcomments_replies} r
             INNER JOIN {block_socialcomments_cmmnts} sc ON sc.id = r.commentid
             WHERE contextid = :contextid";
         $userlist->add_from_sql('userid', $sql, $params);
@@ -197,11 +197,23 @@ class provider implements
         $userlist->add_from_sql('userid', $sql, $params);
 
         // Get userlist by pins.
-        $sql = "SELECT p.userid
+        $params = [
+            'comment_contextid' => $context->id,
+            'page_contextid' => $context->id,
+            'pin_type_comment' => comments_helper::PINNED_COMMENT,
+            'pin_type_page' => comments_helper::PINNED_PAGE,
+        ];
+        $sql = "SELECT p.*
             FROM {block_socialcomments_pins} p
-            INNER JOIN {block_socialcomments_cmmnts} sc ON sc.id = p.itemid
-            WHERE (contextid = :contextid)";
-        $userlist->add_from_sql('userid', $sql, $params);
+            JOIN {block_socialcomments_cmmnts} c
+            ON p.itemid = c.id
+            AND p.itemtype = :pin_type_comment
+            AND c.courseid = :comment_contextid
+            UNION
+            SELECT p.* FROM {block_socialcomments_pins} p
+            WHERE (p.itemid = :page_contextid)
+            AND (p.itemtype = :pin_type_page)";
+        $userlist->add_from_sql('userid', $sql, $params);                                                                                                                                                                                                                                                                                                                                         $userlist->add_from_sql('userid', $sql, $params);
 
         return $userlist;
     }
