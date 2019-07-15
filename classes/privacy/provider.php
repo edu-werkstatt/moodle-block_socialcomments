@@ -343,6 +343,29 @@ class provider implements
     }
 
     /**
+     * Delete all data depending on comments in the specified context.
+     * If a user ID is specified, delete only data depending on this users comments.
+     *
+     * @param \context $context Course context.
+     * @param int $userid ID of the user.
+     */
+    protected static function delete_all_comment_dependant_data(\context $context, int $userid = NULL) {
+        global $DB;
+
+        $conditions = ['contextid' => $context->id];
+        if ($userid !== NULL) { $conditions['userid'] = $userid; }
+
+        $comments = $DB->get_records('block_socialcomments_cmmnts',$conditions);
+        foreach ($comments as $comment) {
+            $DB->delete_records('block_socialcomments_replies', ['commentid' => $comment->id]);
+            $DB->delete_records('block_socialcomments_pins', [
+                'itemid' => $comment->id,
+                'itemtype' => comments_helper::PINNED_COMMENT
+            ]);
+        }
+    }
+
+    /**
      * Delete all data for all users in the specified context.
      *
      * @param \context $context A user context.
