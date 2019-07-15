@@ -226,6 +226,72 @@ class block_socialcomments_testcase extends provider_testcase {
      * Test that user data is deleted using the context.
      */
     public function test_delete_data_for_all_users_in_context() {
+        global $DB;
+
+        $this->resetAfterTest();
+        $generator = $this->getDataGenerator();
+
+        $student = $generator->create_user();
+        $studentcontext = context_user::instance($student->id);
+        $teacher = $generator->create_user();
+
+        // Enrol users in course and add course items.
+        $course1 = $generator->create_course();
+        $generator->enrol_user($student->id, $course1->id, 'student');
+        $generator->enrol_user($teacher->id, $course1->id, 'editingteacher');
+
+        $course2 = $generator->create_course();
+        $generator->enrol_user($student->id, $course2->id, 'student');
+        $generator->enrol_user($teacher->id, $course2->id, 'editingteacher');
+
+        // Generate data for each user.
+        $i = 0;
+        $users = [$student, $teacher];
+        $courses = [$course1, $course2];
+
+        foreach ($courses as $course) {
+            $coursecontext = context_course::instance($course->id);
+            foreach ($users as $user) {
+                // Create a comment.
+                $this->add_comment($coursecontext, $user, "Comment{i}");
+                $i++;
+            }
+        }
+
+        // Confirm data is present for all users.
+        $params = [
+            'userid' => $teacher->id,
+        ];
+        $result = $DB->count_records('block_socialcomments_cmmnts', $params);
+        $this->assertEquals(2, $result);
+
+        $params = [
+            'userid' => $student->id,
+        ];
+        $result = $DB->count_records('block_socialcomments_cmmnts', $params);
+        $this->assertEquals(2, $result);
+
+        // Attempt system context deletion (should have no effect).
+        $systemcontext = context_system::instance();
+        provider::delete_data_for_all_users_in_context($systemcontext);
+
+        $params = [];
+        $result = $DB->count_records('block_socialcomments_cmmnts', $params);
+        $this->assertEquals(4, $result);
+
+        // Delete all data in course1 context.
+        $course_1_context = context_course::instance($course1->id);
+        $course_2_context = context_course::instance($course2->id);
+        provider::delete_data_for_all_users_in_context($course_1_context);
+
+        // Confirm only course1 data is deleted.
+        $params = [ 'contextid' => $course_1_context->id ];
+        $result = $DB->count_records('block_socialcomments_cmmnts', $params);
+        $this->assertEquals(0, $result);
+
+        $params['contextid'] = $course_2_context->id;
+        $result = $DB->count_records('block_socialcomments_cmmnts', $params);
+        $this->assertEquals(2, $result);
     }
 
     /**
