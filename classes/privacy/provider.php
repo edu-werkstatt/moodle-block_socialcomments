@@ -391,6 +391,7 @@ class provider implements
 
         // Delete all replies and pins related to comments from the specified context.
         self::delete_all_comment_dependant_data($context);
+        $DB->delete_records('block_socialcomments_cmmnts', ['contextid' => $context->id]);
         $DB->delete_records('block_socialcomments_subscrs', ['contextid' => $context->id]);
         $DB->delete_records('block_socialcomments_pins', [
             'itemid' => $context->id,
@@ -410,35 +411,37 @@ class provider implements
         // allowing the plugin to be used by other users.
         global $DB;
         // Prepare SQL to gather all completed IDs.
-        $userids = $userlist->get_userids();
-
         $context = $userlist->get_context();
-        list($insql, $inparams) = $DB->get_in_or_equal($userids, SQL_PARAMS_NAMED);
 
-        foreach ($userids as $userid) {
-            self::delete_all_comment_dependant_data($context, $userid);
+        if ($context instanceof \context_course) {
+            $userids = $userlist->get_userids();
+            list($insql, $inparams) = $DB->get_in_or_equal($userids, SQL_PARAMS_NAMED);
+
+            foreach ($userids as $userid) {
+                self::delete_all_comment_dependant_data($context, $userid);
+
+            }
+            $DB->delete_records_select(
+                'block_socialcomments_cmmnts',
+                "userid $insql",
+                $inparams
+            );
+            $DB->delete_records_select(
+                'block_socialcomments_replies',
+                "userid $insql",
+                $inparams
+            );
+            $DB->delete_records_select(
+                'block_socialcomments_subscrs',
+                "userid $insql",
+                $inparams
+            );
+            $DB->delete_records_select(
+                'block_socialcomments_pins',
+                "userid $insql",
+                $inparams
+            );
         }
-        // Delete records where user was marked as attending.
-        $DB->delete_records_select(
-            'block_socialcomments_cmmnts',
-            "userid $insql",
-            $inparams
-        );
-        $DB->delete_records_select(
-            'block_socialcomments_replies',
-            "userid $insql",
-            $inparams
-        );
-        $DB->delete_records_select(
-            'block_socialcomments_subscrs',
-            "userid $insql",
-            $inparams
-        );
-        $DB->delete_records_select(
-            'block_socialcomments_pins',
-            "userid $insql",
-            $inparams
-        );
     }
 
     /**
@@ -452,11 +455,28 @@ class provider implements
         foreach ($contextlist as $context) {
             if ($context->contextlevel == CONTEXT_COURSE) {
                 self::delete_all_comment_dependant_data($context, $user->id);
+
+                $conditions = ['contextid' => $context->id];
+                $comments = $DB->get_records('block_socialcomments_cmmnts', $conditions);
+                foreach ($comments as $comment) {
+                    $DB->delete_records('block_socialcomments_replies', [
+                      'commentid' => $comment->id,
+                      'userid' => $user->id,
+                    ]);
+                    $DB->delete_records('block_socialcomments_pins', [
+                        'itemid' => $comment->id,
+                        'itemtype' => comments_helper::PINNED_COMMENT,
+                        'userid' => $user->id,
+                    ]);
+                }
+
+                $DB->delete_records('block_socialcomments_cmmnts', ['contextid' => $context->id, 'userid' => $user->id]);
+                $DB->delete_records('block_socialcomments_subscrs', ['contextid' => $context->id, 'userid' => $user->id]);
+                $DB->delete_records('block_socialcomments_pins', [
+                    'itemid' => $context->id,
+                    'itemtype' => comments_helper::PINNED_PAGE,
+                ]);
             }
         }
-        $DB->delete_records('block_socialcomments_cmmnts', ['userid' => $user->id]);
-        $DB->delete_records('block_socialcomments_replies', ['userid' => $user->id]);
-        $DB->delete_records('block_socialcomments_subscrs', ['userid' => $user->id]);
-        $DB->delete_records('block_socialcomments_pins', ['userid' => $user->id]);
     }
 }
