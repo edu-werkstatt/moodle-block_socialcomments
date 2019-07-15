@@ -121,7 +121,8 @@ class provider implements
         $sql = "SELECT c.id
                 FROM {context} c
                 INNER JOIN {block_socialcomments_cmmnts} s ON s.contextid = c.id
-                WHERE (s.userid = :userid)";
+                WHERE (s.userid = :userid)
+                GROUP BY id";
         $contextlist->add_from_sql($sql, $params);
 
         // Get context by replies.
@@ -137,7 +138,8 @@ class provider implements
         $sql = "SELECT c.id
                 FROM {context} c
                 INNER JOIN {block_socialcomments_subscrs} s ON s.contextid = c.id
-                WHERE (s.userid = :userid)";
+                WHERE (s.userid = :userid)
+                GROUP BY id";
         $contextlist->add_from_sql($sql, $params);
 
         // Get context by pins.
@@ -227,7 +229,7 @@ class provider implements
      */
     protected static function export_comments(int $userid, \context $context) {
         global $DB;
-        $sql = "SELECT sc.content, sc.contextid, sc.userid,
+        $sql = "SELECT sc.id, sc.content, sc.contextid, sc.userid,
                   sc.timecreated, sc.timemodified
                 FROM {block_socialcomments_cmmnts} sc WHERE
                   sc.userid = :userid";
@@ -254,7 +256,7 @@ class provider implements
      */
     protected static function export_replies(int $userid, \context $context) {
         global $DB;
-        $sql = "SELECT r.content, r.userid, r.timecreated, r.timemodified, sc.contextid
+        $sql = "SELECT r.id, r.content, r.userid, r.timecreated, r.timemodified, sc.contextid
                 FROM {block_socialcomments_replies} r
                 INNER JOIN {block_socialcomments_cmmnts} sc ON sc.id = r.commentid
                 WHERE (r.userid = :userid)";
@@ -288,7 +290,8 @@ class provider implements
         $records = $DB->get_records_sql($sql, $params);
         if (!empty($records)) {
             $subscriptions = (object) array_map(function($record) use($context) {
-                $course = $DB->get_record('course','id', $record->courseid);
+                global $DB;
+                $course = $DB->get_record('course',['id'=> $record->courseid]);
                 return [
                         'course' => format_string($course->fullname),
                         'timelastsent' => transform::datetime($record->timelastsent),
@@ -309,14 +312,14 @@ class provider implements
      */
     protected static function export_pins(int $userid, \context $context) {
         global $DB;
-        $sql = "SELECT p.itemtype, p.itemid, p.timecreated, c.contextid
+        $sql = "SELECT p.id, p.itemtype, p.itemid, p.timecreated, c.contextid
                 FROM {block_socialcomments_pins} p
                 JOIN {block_socialcomments_cmmnts} c
                 ON p.itemid = c.id
                 WHERE (p.userid = :userid_comment)
                 AND (p.itemtype = :pin_type_comment)
                 UNION
-                SELECT p.itemtype, p.itemid, p.timecreated, p.itemid AS contextid
+                SELECT p.id, p.itemtype, p.itemid, p.timecreated, p.itemid AS contextid
                 FROM {block_socialcomments_pins} p
                 WHERE (p.userid = :userid_page)
                 AND (p.itemtype = :pin_type_page)";
