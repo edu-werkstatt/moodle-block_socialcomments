@@ -215,7 +215,6 @@ class provider implements
         $user = \core_user::get_user($contextlist->get_user()->id);
 
         static::export_comments($user->id, $context);
-        static::export_comments($user->id, $context);
         static::export_replies($user->id, $context);
         static::export_pins($user->id, $context);
         static::export_subscriptions($user->id, $context);
