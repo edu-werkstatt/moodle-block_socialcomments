@@ -358,7 +358,9 @@ class provider implements
      */
     protected static function delete_all_comment_dependant_data(\context $context, int $userid = null) {
         global $DB;
-
+        if ($context->contextlevel !== CONTEXT_COURSE) {
+            return;
+        }
         $conditions = ['contextid' => $context->id];
         if ($userid !== null) {
             $conditions['userid'] = $userid;
