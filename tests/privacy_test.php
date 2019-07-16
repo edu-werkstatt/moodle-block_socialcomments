@@ -361,16 +361,16 @@ class block_socialcomments_testcase extends provider_testcase {
         $this->assertEquals(4, $result);
 
         // Delete all data in course1 context.
-        $course_1_context = context_course::instance($course1->id);
-        $course_2_context = context_course::instance($course2->id);
-        provider::delete_data_for_all_users_in_context($course_1_context);
+        $coursecontext1 = context_course::instance($course1->id);
+        $coursecontext2 = context_course::instance($course2->id);
+        provider::delete_data_for_all_users_in_context($coursecontext1);
 
         // Confirm only course1 data is deleted.
-        $params = [ 'contextid' => $course_1_context->id ];
+        $params = [ 'contextid' => $coursecontext1->id ];
         $result = $DB->count_records('block_socialcomments_cmmnts', $params);
         $this->assertEquals(0, $result);
 
-        $params['contextid'] = $course_2_context->id;
+        $params['contextid'] = $coursecontext2->id;
         $result = $DB->count_records('block_socialcomments_cmmnts', $params);
         $this->assertEquals(2, $result);
     }
