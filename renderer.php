@@ -469,7 +469,6 @@ class block_socialcomments_renderer extends plugin_renderer_base {
      * @return string
      */
     public function render_block_content($commentshelper, $contentdata) {
-
         $html = html_writer::start_tag('div', array('id' => 'ccomment-form-content'));
         $html .= $this->render_form_content($commentshelper, $contentdata);
         $html .= html_writer::end_tag('div');
