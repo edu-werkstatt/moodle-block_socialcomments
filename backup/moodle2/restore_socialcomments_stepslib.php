@@ -116,7 +116,6 @@ class restore_socialcomments_block_structure_step extends restore_structure_step
         $data->courseid = $this->get_courseid();
         $data->contextid = context_course::instance($data->courseid)->id;
         $data->userid = $this->get_mappingid('user', $data->userid);
-        // TODO: check if timelastsent needs to be updated or modified.
         $newitemid = $DB->insert_record('block_socialcomments_subscrs', $data);
     }
 }
