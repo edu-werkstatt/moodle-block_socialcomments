@@ -133,7 +133,6 @@ class block_socialcomments_testcase extends provider_testcase {
         $this->assertEquals($coursecontext, $contextlist->current());
     }
 
-
     /**
      * Test that data is exported correctly for this plugin.
      */
@@ -150,7 +149,6 @@ class block_socialcomments_testcase extends provider_testcase {
         $course = $generator->create_course();
         $coursecontext = context_course::instance($course->id);
         $generator->enrol_user($student->id, $course->id, 'student');
-
 
         // Generate some data.
         $commentid0 = $this->save_comment($coursecontext, $student, 'Comment0');

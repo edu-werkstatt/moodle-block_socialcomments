@@ -98,8 +98,8 @@ class reply extends basepost {
     public function delete() {
         global $DB;
         $DB->delete_records('block_socialcomments_replies', array('id' => $this->id));
-    }    
-    
+    }
+
     public function fire_event_created() {
 
         $event = \block_socialcomments\event\reply_created::create(
@@ -118,7 +118,7 @@ class reply extends basepost {
      * Create or update this post.
      *
      * @return \block_socialcomments\local\reply
-     */    
+     */
     public function save() {
         global $DB, $USER;
 
@@ -134,5 +134,5 @@ class reply extends basepost {
             $this->fire_event_created();
         }
         return $this;
-    }    
+    }
 }

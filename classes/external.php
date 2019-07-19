@@ -574,8 +574,8 @@ class block_socialcomments_external extends external_api {
 
         $warnings = array();
         $arrayparams = array(
-                'sectionid' => $sectionid,
-                'courseid' => $courseid
+            'sectionid' => $sectionid,
+            'courseid' => $courseid
         );
 
         $params = self::validate_parameters(self::get_activity_options_parameters(), $arrayparams);
