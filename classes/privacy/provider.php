@@ -229,7 +229,7 @@ class provider implements
     }
 
     /**
-     * Export all socialcomments comments for the for the specified user.
+     * Export all socialcomments comments for the specified user.
      *
      * @param int $userid The user ID.
      * @param \context $context The user context.
@@ -256,7 +256,7 @@ class provider implements
     }
 
     /**
-     * Export all socialcomments replies for the for the specified user.
+     * Export all socialcomments replies for the specified user.
      *
      * @param int $userid The user ID.
      * @param \context $context The user context.
@@ -283,7 +283,7 @@ class provider implements
     }
 
     /**
-     * Export all socialcomments subscriptions for the for the specified user.
+     * Export all socialcomments subscriptions for the specified user.
      *
      * @param int $userid The user ID.
      * @param \context $context The user context.
@@ -312,7 +312,7 @@ class provider implements
     }
 
     /**
-     * Export all socialcomments pins for the for the specified user.
+     * Export all socialcomments pins for the specified user.
      *
      * @param int $userid The user ID.
      * @param \context $context The user context.
