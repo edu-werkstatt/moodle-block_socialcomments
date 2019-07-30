@@ -89,7 +89,7 @@ class comments_helper {
         $params['contextid'] = $this->context->id;
 
         $sql = "SELECT COUNT(id)
-                 FROM {block_socialcomments_comments}
+                 FROM {block_socialcomments_cmmnts}
                  WHERE contextid = :contextid {$andingroups}";
 
         return $DB->count_records_sql($sql, $params);
@@ -129,7 +129,7 @@ class comments_helper {
             'userid' => $this->user->id
         );
 
-        $commentsdata->subscribed = $DB->count_records('block_socialcomments_subscripts', $countparams);
+        $commentsdata->subscribed = $DB->count_records('block_socialcomments_subscrs', $countparams);
         $commentsdata->count = $this->get_commentscount();
         $commentsdata->minpage = 0;
         $commentsdata->maxpage = 0;
@@ -151,7 +151,7 @@ class comments_helper {
 
         $sql = "SELECT bc.id as postid, bc.content, bc.timecreated, p.itemtype as pinned,
                 bc.userid, $userfields, $userpicturefields
-                FROM {block_socialcomments_comments} bc
+                FROM {block_socialcomments_cmmnts} bc
                 JOIN {user} u ON bc.userid = u.id
                 LEFT JOIN {block_socialcomments_pins} p ON p.itemid = bc.id AND p.itemtype = :itemtype AND p.userid = :userid
                 WHERE bc.contextid = :contextid {$andingroups} ORDER by bc.timecreated ASC ";
@@ -335,12 +335,12 @@ class comments_helper {
         );
 
         if (!$checked) {
-            $DB->delete_records('block_socialcomments_subscripts', $params);
+            $DB->delete_records('block_socialcomments_subscrs', $params);
             return false;
         }
 
         // Already subscribed?
-        if ($exists = $DB->get_record('block_socialcomments_subscripts', $params)) {
+        if ($exists = $DB->get_record('block_socialcomments_subscrs', $params)) {
             return true;
         }
 
@@ -350,7 +350,7 @@ class comments_helper {
         $subscript->timemodified = $subscript->timecreated;
         // Next cronjob will send changes starting from this time.
         $subscript->timelastsent = $subscript->timecreated;
-        $DB->insert_record('block_socialcomments_subscripts', $subscript);
+        $DB->insert_record('block_socialcomments_subscrs', $subscript);
 
         return true;
     }
@@ -362,7 +362,7 @@ class comments_helper {
         $courseid = $eventdata['objectid'];
 
         $sql = "SELECT bc.id
-                FROM {block_socialcomments_comments} bc
+                FROM {block_socialcomments_cmmnts} bc
                 WHERE courseid = ? ";
 
         $commentids = $DB->get_records_sql($sql, array($courseid));
@@ -374,7 +374,7 @@ class comments_helper {
         }
 
         // Delete subscriptions.
-        $DB->delete_records('block_socialcomments_subscripts', array('courseid' => $courseid));
+        $DB->delete_records('block_socialcomments_subscrs', array('courseid' => $courseid));
     }
 
     public static function user_deleted(\core\event\user_deleted $event) {
@@ -383,7 +383,7 @@ class comments_helper {
         $eventdata = $event->get_data();
         $userid = $eventdata['objectid'];
 
-        $DB->delete_records('block_socialcomments_subscripts', array('userid' => $userid));
+        $DB->delete_records('block_socialcomments_subscrs', array('userid' => $userid));
         $DB->delete_records('block_socialcomments_pins', array('userid' => $userid));
     }
 
