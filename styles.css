@@ -266,6 +266,10 @@
     border: 1px solid #ccc;
 }
 
+.form-control {
+    height: inherit !important;
+}
+
 /* Style speech bubble */
 #ccomment-replyform .form-control {
     position: relative;
