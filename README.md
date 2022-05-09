@@ -1,5 +1,7 @@
 # Social Comments Moodle Plugin
 
+:heavy_exclamation_mark: This repository has been archived. The maintainership of the plugin has been transferred to https://github.com/bdecentgmbh/moodle-block_socialcomments.
+
 ## Description
 The Social Comments block plugin for Moodle makes learning more engaging by adding the following features (among others):
 * subscribe to an activity/ resource and get an email digest informing you about new comments
